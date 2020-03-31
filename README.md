@@ -97,40 +97,49 @@ An Example Teacher User:
 ## Wireframes
 
 /login - home page to choose to log in/register as teacher/student
+
 link:about, register-teacher, register-student, w/ authentication: profile-teacher (login as teacher), browse (login as student)
 ![login](documentation/login.jpeg)
 
 /register/teacher - page for registering teacher profile
+
 link: login, after submit: profile-teacher
 ![register-teacher](documentation/register-teacher.jpeg)
 
 /register/student - page for registering student profile
+
 link: login, after submit: browse
 ![register-student](documentation/register-student.jpeg)
 
 /profile/teacher - page for showing teacher profile with scheduling page that can be filled out by students, if it is teacher, they can modify availiability
+
 link: about, browse, if logged in as teacher: contact, upcoming lessons
 ![profile-teacher](documentation/profile-teacher.jpeg)
 
 /profile/student - page for showing student profile
+
 link: about, 
       if logged in as student: browse, contact, upcoming lessons,
       if logged in as teacher: contact, upcoming-lessons
 ![profile-student](documentation/profile-student.jpeg)
 
 /browse - page for showing all teachers or all filtered teachers
+
 link: about, profile-teacher, if logged in as student: profile-student
 ![browse](documentation/browse.jpeg)
 
 /contact - page for showing contact of user from both student and teacher portals, sort by how many lessons user scheduled with them
+
 link: profile-teacher, profile-student
 ![contact](documentation/contact.jpeg)
 
 /upcoming-lessons - page for showing all upcoming lessons
+
 link: profile-teacher, profile-student
 ![upcoming-lessons](documentation/upcoming-lessons.jpeg)
 
 /about - page for showing about and disclaimers regarding Ballroom Tinder
+
 link: browse, login, profile-teacher, profile-student
 ![upcoming-lessons](documentation/about.jpeg)
 
