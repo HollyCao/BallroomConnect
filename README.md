@@ -171,7 +171,7 @@ Here's the [Site Map](documentation/site-map.jpeg)
 
 ## [Link to Initial Main Project File](src/app.js) 
 
-(___TODO__: create a skeleton Express application with a package.json, app.js, views folder, etc. ... and link to your initial app.js_)
+
 
 ## Annotations / References Used
 
