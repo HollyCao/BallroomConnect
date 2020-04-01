@@ -13,22 +13,22 @@ Ballroom Tinder is a web app that allows teachers and students to get to know ea
 The application will store Student and Teacher Entries:
 
 * Both have:
-- username
-- hash
-- headshot (profile photo as a link)
-- profile
-- styles (not required for students because that's not being filtered and they might not know which style they want to try, for reference only)
-- contact (people that they have taken lessons from or have scheduled/attempted to schedule lessons with, along with how many lessons you have scheduled)
-- upcoming lessons: 
-  1. lesson ID also keeps track of how many lessons you've had with teacher/student, can possibily be parsed to show the # of lessons in contacts
-  2. teachers can only view profile of students in the contact list for anti-promotion reasons
-  3. stored as cookies and set expiration date
+  - username
+  - hash
+  - headshot (profile photo as a link)
+  - profile
+  - styles (not required for students because that's not being filtered and they might not know which style they want to try, for reference only)
+  - contact (people that they have taken lessons from or have scheduled/attempted to schedule lessons with, along with how many lessons you have scheduled)
+  - upcoming lessons: 
+   1. lesson ID also keeps track of how many lessons you've had with teacher/student, can possibily be parsed to show the # of lessons in contacts
+   2. teachers can only view profile of students in the contact list for anti-promotion reasons
+   3. stored as cookies and set expiration date
 
 * Teacher only:
-- availiability (ideally implement Google Calendar, if not will show up as radio buttons for the week as availiability)
-- price
-- portfolio (not required but recommended for self-promotion)
-- height (not required, but for teachers to disclaim if they have non-common heights)
+  -  availiability (ideally implement Google Calendar, if not will show up as radio buttons for the week as availiability)
+  - price
+  - portfolio (not required but recommended for self-promotion)
+  - height (not required, but for teachers to disclaim if they have non-common heights)
 
 
 
@@ -166,7 +166,7 @@ Here's the [Site Map](documentation/site-map.jpeg)
 
 
 * (5 points) Login with Google Account
-    * I'm going to link 
+    * I'm going to attempt to have the options for users to register with google accounts so they don't need to remember username and password
 * (2 points) Store images and videos on server with GridFS for Mongo DB
     * I'm going to allow teachers and students to upload their profile pictures on the database so any user can access it
     * In addition, I will allow teachers to upload videos, which would not be guarenteed to load
