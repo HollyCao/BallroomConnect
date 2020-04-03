@@ -1,0 +1,57 @@
+<head>
+	<!-- Google Sign out button -->
+<a href="#" onclick="signOut();">Sign out</a></br>
+
+<script>
+  function signOut() {
+    var auth2 = gapi.auth2.getAuthInstance(); //TODO: redirect to signin page
+    auth2.signOut().then(function () {
+      console.log('User signed out.');
+    });
+  }
+</script>
+</head>
+
+<form method = "GET" action = "/filter">
+	Style:<select name = "style" style = "font-size: 20px">
+		<option value = "">-</option>
+		<option value = "standard">Standard</option>
+		<option value = "latin">Latin</option>
+		<option value = "smooth">Smooth</option>
+		<option value = "rhythm">Rhythm</option>
+		<option value = "hustle">Hustle</option>
+		<option value = "salsa">Salsa</option>
+		<option value = "zouk">Zouk</option>
+		<option value = "argentine-tango">Argentine Tango</option>
+		<option value = "bachata">bachata</option>
+		<option value = "silverscreen">Silver Screen</option>
+		<option value = "others">Others</option>
+		</select>
+
+	Location:<select name = "location" style = "font-size: 20px">
+		<option value = "">-</option>
+		<option value = "new_york">New York</option>
+		<option value = "boston">Boston</option>
+		<option value = "california">California</option>
+		<option value = "italy">Italy</option>
+		<option value = "russia">Russia</option>
+		<option value = "england">England</option>
+		<option value = "east_coast">U.S. East Coast (others)</option>
+		<option value = "west_coast">U.S. West Coast(others)</option>
+		<option value = "europe">Europe(others)</option>
+		<option value = "asia">Asia</option>
+		<option value = "others">Others</option>
+	</select>
+	<input type = "submit" value = "Find" style = "font-size: 20px">
+</form>
+
+{{count}} teachers availiable
+
+{{#each teachers as |teacher|}}
+	<div class = "entry">
+		{{teacher.portfilio.[0]}}
+		{{teacher.username}}
+		{{teacher.profile}}
+		{{teacher.styles}}
+	</div>
+{{/each}}

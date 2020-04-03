@@ -4,11 +4,11 @@ const mongoose = require('mongoose');
 
 const Student = new mongoose.Schema({
 	username:{type:String, required:true},
-	hash:{type:String, required: true},
+	password:{type:String, required: true},	//TODO: hash with salt
 	profile:{type:String, required:true},
-	styles:{type:Array, default:[]},
-	upcoming lessons: {type:Array, default:[]},
-	contact: {type:Array, default:[]}
+	styles:{type:String, default:""},
+	upcoming_lessons: {type:Array, default:[]},
+	contact: {type:Array, default:[]},
 	headshot: {type:String, default:"/public/image/logo.jpeg"}
 });
 
@@ -24,8 +24,9 @@ const Teacher = new mongoose.Schema({
 	price: {type:String, required: true},
 	height: {type: String, default: ""},
 	portfolio:{type:Array, default:[]},
+	locations: {type: Array, default:[]},
 	availiability:{type:Array, required:true},
-	upcoming lessons:{type:Array, default:[]},
+	upcoming_lessons:{type:Array, default:[]},
 	contact:{type:Array, default:[]}
 
 });

@@ -1,0 +1,53 @@
+<p>Welcome new teacher!</p>
+<form method = "POST" action = "/add-teacher">
+	Username:<input type = "text" name = "username" value = ""><label style = "color:red">*required</label></br></br>
+
+	Password:<input type = "password" name = "password" value = ""><label style = "color:red">*required</label></br></br>
+
+	Profile Photo:<input type = "file" name = "headshot" accept="image/*"><label style = "color:red">*required</label></br></br>
+
+	Portfolio:<input type = "file" name = "portfolio" accept="image/*, video/*" multiple></br></br>
+
+	Height:<input type = "text" name = "height" value = ""></br></br>
+
+*to select multiple, hold: windows - control, mac - command </br></br>
+
+	Styles: </br>
+	<select name = "styles" style = "font-size: 20px" multiple>
+		<option value = "standard">Standard</option>
+		<option value = "latin">Latin</option>
+		<option value = "smooth">Smooth</option>
+		<option value = "rhythm">Rhythm</option>
+		<option value = "hustle">Hustle</option>
+		<option value = "salsa">Salsa</option>
+		<option value = "zouk">Zouk</option>
+		<option value = "argentine-tango">Argentine Tango</option>
+		<option value = "bachata">bachata</option>
+		<option value = "silverscreen">Silver Screen</option>
+		<option value = "others">Others</option>
+	</select></br></br>
+
+	Locations: </br>
+	<select name = "locations" style = "font-size: 20px" multiple>
+		<option value = "new_york">New York</option>
+		<option value = "boston">Boston</option>
+		<option value = "california">California</option>
+		<option value = "italy">Italy</option>
+		<option value = "russia">Russia</option>
+		<option value = "england">England</option>
+		<option value = "east_coast">U.S. East Coast (others)</option>
+		<option value = "west_coast">U.S. West Coast(others)</option>
+		<option value = "europe">Europe(others)</option>
+		<option value = "asia">Asia</option>
+		<option value = "others">Others</option>
+	</select></br></br>
+
+
+
+	Which Studio and Your Pricing Description:<label style = "color:red">*required</label></br><input type = "textarea" style = "width:300px; height: 100px" name = "price" value = ""></br></br>
+
+
+	About You:<label style = "color:red">*required</label></br><textarea style = "width: 600px;height: 200px" name = "profile" value = ""></textarea></br></br>
+
+	<input style = "font-size:40px"type = "submit" value = "get started as teacher!">
+</form>
