@@ -180,7 +180,18 @@ Here's the [Site Map](documentation/site-map.jpeg)
 
 ## [Link to Initial Main Project File](src/app.js) 
 
+## Super Connect
+Considering adding features for premium users:
+* Teachers: monitor how many times your profiles have been checked out/ how much you are booked compared with other teachers, and some other metadata
+* Fancy background/template with more display medias such as gif
+* Ad space through entering to our list of featured teachers (potential complementary feature video/talk show guest)
+* Send mass message to all students in contact
+* Host public workshops for all students to sign up
+* Only allow students to make appointments if they have permission/key to
 
+
+Other Potential Features:
+* Ratings
 
 ## Annotations / References Used
 

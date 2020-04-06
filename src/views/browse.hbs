@@ -1,15 +1,8 @@
 <head>
 	<!-- Google Sign out button -->
-<a href="#" onclick="signOut();">Sign out</a></br>
+<a href="/" onclick="signOut();">Sign out</a></br>
 
-<script>
-  function signOut() {
-    var auth2 = gapi.auth2.getAuthInstance(); //TODO: redirect to signin page
-    auth2.signOut().then(function () {
-      console.log('User signed out.');
-    });
-  }
-</script>
+
 </head>
 
 <form method = "GET" action = "/filter">
