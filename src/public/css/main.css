@@ -13,6 +13,18 @@ div{
 	font-family: "Comic Sans MS", cursive, sans-serif;
 }
 
+.g-signin2{
+	display: inline;
+}
+
+.user-info{
+	display: none;
+}
+
+#sign-in{
+	
+}
+
 a{
 	padding: 5px;
     color: #000000;

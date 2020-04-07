@@ -4,15 +4,87 @@
 <title>Ballroom Connect</title>
 <script src="https://apis.google.com/js/platform.js" async defer></script> 
 
+  <script>
+    function start() {
+      gapi.load('auth2', function() {
+        auth2 = gapi.auth2.init({
+          client_id: '676146522776-ke04k84usoaq9r5qn5qs5pnrfk84sj8q.apps.googleusercontent.com',
+          // Scopes to request in addition to 'profile' and 'email'
+          //scope: 'additional_scope'
+        });
+      });
+    }
+
+	function onSignIn(googleUser) {
+		console.log("signed in");
+	  var profile = googleUser.getBasicProfile();	//TODO: have if statement, determine type of user and send to appropriate starting page
+	  $(".data").css("display","inline-block"); //TODO: fix this so that it appears on the same line as title but to the side
+	  $("#pic").attr('src',profile.getImageUrl());
+	  $("#email").text(profile.getEmail())
+	}
+
+
+	function signInCallback(authResult) {
+	  if (authResult['code']) {
+
+	    // Hide the sign-in button now that the user is authorized, for example:
+	    $('#signinButton').attr('style', 'display: none');
+
+	    // Send the code to the server
+	    $.ajax({
+	      type: 'POST',
+	      url: 'http://example.com/storeauthcode',
+	      // Always include an `X-Requested-With` header in every AJAX request,
+	      // to protect against CSRF attacks.
+	      headers: {
+	        'X-Requested-With': 'XMLHttpRequest'
+	      },
+	      contentType: 'application/octet-stream; charset=utf-8',
+	      success: function(result) {
+	        // Handle or verify the server response.
+	      },
+	      processData: false,
+	      data: authResult['code']
+	    });
+	  } else {
+	    // There was an error.
+	  }
+	}
+
+  </script>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-<script src = "../app.js"></script>
-<meta name="google-signin-client_id" content="http://758238718824-lmmtqhncmcqiah0ibpmk50hkhcdisc08.apps.googleusercontent.com">
+<script src = "../frontEnd.js"></script>
+<meta name="google-signin-client_id" content="676146522776-ke04k84usoaq9r5qn5qs5pnrfk84sj8q.apps.googleusercontent.com">
 
 <!-- <meta name="google-signin-client_id" content="http://758238718824-lmmtqhncmcqiah0ibpmk50hkhcdisc08.apps.googleusercontent.com">
  -->
 
 <link rel="stylesheet" type="text/css" href="/css/main.css">
+
+<div id = "sign-in">
+	<button id="signinButton">Sign in with Google</button>
+	<script>
+	  $('#signinButton').click(function() {
+	    // signInCallback defined in step 6.
+	    auth2.grantOfflineAccess().then(signInCallback);
+	  });
+	</script>
+
+	<div class="g-signin2" data-onsuccess="onSignIn" style ="position:center"></div>
+</div>
+
+
+<div class = "user-info" style = "display: none">
+	<img id = "pic" class= "img-circle" width = "100" height = "100"/>
+	<p id = "email" class = "user-email"></p>
+	
+	<!-- Google Sign out button -->
+	<a href="/" onclick="signOut();">Sign out</a></br>
+</div>
+
+
 </head>
 <body>
 
