@@ -1,0 +1,15 @@
+<h3>My Plans</h3>
+<p>
+	Upcoming Lessons:</br>
+	{{#each user.upcoming_lessons as |lesson|}}
+		<div class = "entry">{{lesson}}</div>
+	{{/each}}
+</p>
+<p>
+	Contacts:</br>
+	{{#each user.contact as |c|}}
+	<a href = "/{{c.slug}}">{{c.name}}</a>
+	</t>Lessons:{{c.lessons}}</br>
+	{{/each}}
+
+</p>

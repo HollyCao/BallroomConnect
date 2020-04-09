@@ -6,6 +6,16 @@ body{
 div{
 	text-align: center;
 }
+
+
+
+.entry{
+	padding: 5px;
+	border-style: outset;
+	border-color: khaki;
+	display: table;
+}
+
 .nav{
 	text-align: center;
 	background-color: khaki;
@@ -22,7 +32,7 @@ div{
 }
 
 #sign-in{
-	
+
 }
 
 a{
@@ -43,6 +53,10 @@ h2{
 	font-family: impact, Charcoal, sans-serif;
 	font-size: 40px;
 	text-shadow: 5px 10px 5px #999999;
+}
+
+h3{
+	text-align: center;
 }
 table{
 	width: 100%;

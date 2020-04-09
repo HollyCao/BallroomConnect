@@ -36,6 +36,44 @@ app.get('/', (req,res)=>{
 
 app.post('/login',(req,res)=>{
 	let errormsg = "";
+// 	//implementing google login
+// 	if(req.getHeader("X-Requested-With")== null){
+// 		errormsg = "Server error: no 'X-Requested-With' header";
+// 		res.render("login",{errormsg});
+// 	}
+
+// 	String CLIENT_SECRET_FILE = "client_secret.json";
+// 	// Exchange auth code for access token
+// 	GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new FileReader(CLIENT_SECRET_FILE));
+// 	GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
+// 				new NetHttpTransport(),
+// 	              JacksonFactory.getDefaultInstance(),
+// 	              "https://oauth2.googleapis.com/token",
+// 	              clientSecrets.getDetails().getClientId(),
+// 	              clientSecrets.getDetails().getClientSecret(),
+// 	              authCode,
+// 	              REDIRECT_URI)  // Specify the same redirect URI that you use with your web
+// 	                             // app. If you don't have a web version of your app, you can
+// 	                             // specify an empty string.
+// 	              .execute();
+
+// 	String accessToken = tokenResponse.getAccessToken();
+// //TODO: call calendar API
+// // Get profile info from ID token
+// GoogleIdToken idToken = tokenResponse.parseIdToken();
+// GoogleIdToken.Payload payload = idToken.getPayload();
+// String userId = payload.getSubject();  // Use this value as a key to identify a user.
+// String email = payload.getEmail();
+// boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+// String name = (String) payload.get("name");
+// String pictureUrl = (String) payload.get("picture");
+// String locale = (String) payload.get("locale");
+// String familyName = (String) payload.get("family_name");
+// String givenName = (String) payload.get("given_name");
+
+
+
+
 	if(req.body.type == "teacher"){
 		let user = Teacher.findOne({username : req.body.username},(err, user)=>{
 			if(err){
@@ -63,6 +101,7 @@ app.post('/login',(req,res)=>{
 			}
 		});
 	}
+
 	else if(req.body.type == "student"){
 		let user = Student.findOne({username : req.body.username},(err, user)=>{
 			if(err){
@@ -98,6 +137,8 @@ app.post('/login',(req,res)=>{
 	
 	
 });
+
+
 app.get('/register-teacher', (req,res)=>{
 	res.render('register-teacher');
 });
@@ -118,7 +159,7 @@ app.post('/add-student',(req,res)=>{
 		});
 		student.save((err, savedStudent)=>{
 			if(err){
-				console.log(err);
+			 	console.log(err);
 				res.send(err);
 				res.redirect('/register-student');
 			}else{
@@ -158,27 +199,72 @@ app.post('/add-teacher',(req,res)=>{
 
 });
 
-
+app.get('/me',(req,res)=>{
+	//display private information: upcoming lessons and contacts
+	res.render('me',{user:req.session.user});	//TODO: pass in user for this session
+});
 app.get('/about', (req,res)=>{
 	res.render('about');
 });
 app.get('/profile-teacher', (req,res)=>{
-	res.render('profile-teacher');
+	//TODO: how to pass teacher to here when redirect
+	res.render('profile-teacher',{teacher: teacher});
 });
 app.get('/profile-student', (req,res)=>{
 	res.render('profile-student');
 });
 app.get('/browse', (req,res)=>{
-	res.render('browse');
-	let allTeachers = Teacher.find({},(err, result, count)=>{		//TODO: stuck on trying to load teachers
-		res.render('browse',{teachers: result, count:count});
+	let allTeachers = Teacher.find({},(err, result)=>{		//TODO: stuck on trying to load teachers
+		res.render('browse',{teachers: result, count:result.length});
 	});
 	
 });
-app.get('/filter', (req,res)=>{
-	let filtered = Teacher.find({},(err, result, count)=>{
-		let found = result.filter((teacher)=>{teacher.styles.contains(req.query.style)||teacher.locations.contains(req.query.location)});
-		res.render('browse',{teachers: found, count:found.length});
+app.get('/filter', (req,res)=>{	//can only choose up to one parameter to search
+	// let filtered = Teacher.find({},(err, result, count)=>{
+
+	// 	let found = result.filter((teacher)=>{
+
+	// 		req.query.style.forEach()
+	// 		console.log("style data type"+typeof(teacher.styles)); //an object
+	// 		teacher.styles.contains(req.query.style)||teacher.locations.contains(req.query.location);
+	// 	});
+
+	// 	res.render('browse',{teachers: found, count:found.length});
+	// });
+
+
+	// let search = {};
+	// if(req.query.style != ""){
+	// 	console.log("style: "+req.query.style);
+	// 	search.style = req.query.style;
+	// }
+	// if(req.query.location != ""){
+	// 	console.log("location: "+req.query.location);
+	// 	search.location = req.query.location;
+	// }
+
+
+	Teacher.find({},(err, result)=>{	//list all teachers and do filter because the entries are arrays
+		let filtered = result.filter((teacher)=>{
+
+			console.log("inside filter function");
+			console.log(teacher.styles);
+			console.log(teacher.locations);
+			if(req.query.style != "" && req.query.location != ""){
+				return Array.from(teacher.styles).contains(req.query.style)&&Array.from(teacher.locations).contains(req.query.location);
+			}
+			else if(req.query.style != ""){
+				return Array.from(teacher.styles).contains(req.query.style);
+			}
+			else if(req.query.location != ""){
+				return Array.from(teacher.locations).contains(req.query.location);
+			}
+			else{		//not searching for anything
+				return true;
+			}
+			
+		});
+		res.render('browse',{teachers: filtered, count: filtered.length});
 	});
 	
 });
@@ -191,12 +277,6 @@ app.get('/upcoming-lessons', (req,res)=>{
 	res.render('upcoming-lessons');
 });
 
-function onSignIn(googleUser) {
-  var profile = googleUser.getBasicProfile();	//TODO: have if statement, determine type of user and send to appropriate starting page
-  $(".data").css("display","inline-block"); //TODO: fix this so that it appears on the same line as title but to the side
-  $("#pic").attr('src',profile.getImageUrl());
-  $("#email").text(profile.getEmail())
-}
 
 
 app.listen(3000);
