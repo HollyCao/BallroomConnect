@@ -8,7 +8,14 @@ div{
 }
 
 
+label{
+	color: grey;
+	font-weight: bold;
+}
 
+field{
+	display: inline-block;
+}
 .entry{
 	padding: 5px;
 	border-style: outset;
@@ -23,6 +30,7 @@ div{
 	font-family: "Comic Sans MS", cursive, sans-serif;
 }
 
+
 .g-signin2{
 	display: inline;
 }
@@ -35,6 +43,10 @@ div{
 
 }
 
+alert{
+	color:red;
+	font-size: 10px;
+}
 a{
 	padding: 5px;
     color: #000000;

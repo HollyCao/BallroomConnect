@@ -1,12 +1,27 @@
-<h3>Teacher Profile:{{teacher.name}}</h3>
-	<div>
-		{{#each teacher.portfilio}}
-			{{this}}
+
+<h3>Teacher Profile:{{teacher.username}}</h3>
+	<div style = "text-align: left;margin-left: 60px; padding: 30px; background-color: lightyellow" >
+
+		{{#each portfolio as |image|}}
+			{{image}}</br>
 		{{/each}}
-		{{teacher.username}}
-		{{teacher.profile}}
-		{{teacher.styles}}
-		{{teacher.price}}
-		{{teacher.height}}
-		<!--google calendar stuff-->
-	</div>
+
+		{{teacher.profile}}</br></br>
+		<label>Styles: </label><field>{{teacher.styles}}</field></br></br>
+		<label>Pricing: </label><field>{{teacher.price}}</field></br></br>
+		<label>Height: </label><field>{{teacher.height}}</field></br></br>
+
+
+
+
+{{#if teacher.youtube_vids}}
+	<p>{{teacher.username}}'s work:</p>
+	<iframe width="720" height="405" src="https://www.youtube.com/embed/VIDEO_ID?playlist={{teacher.youtube_vids}}" allowfullscreen><a href = "https://www.youtube.com/watch?v={{youtube_vids}}">Dance Video</a></iframe>
+{{/if}}
+
+
+
+<!--alternative youtube link inside iframe to support browsers without iframe-->
+
+
+</div>

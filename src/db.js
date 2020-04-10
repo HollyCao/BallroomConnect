@@ -4,9 +4,9 @@ const mongoose = require('mongoose'),
 //a student entry, non-required value defaulted for templating purpose
 
 const Student = new mongoose.Schema({
-	username:{type:String, required:true,trim:true},
-	password:{type:String, required: true},
-	profile:{type:String, required:true},
+	username:{type:String, required:[true,'{PATH} is required!']},
+	password:{type:String, required: [true,'{PATH} is required!']},
+	profile:{type:String, required:[true,'{PATH} is required!']},
 	styles:{type:String, default:""},
 	upcoming_lessons: {type:Array, default:[]},
 	contact: {type:Array, default:[]},
@@ -20,15 +20,16 @@ mongoose.model('Student',Student);
 //a teacher entry, non-required value defaulted for templating purpose
 
 const Teacher = new mongoose.Schema({
-	username:{type:String, required: true},
-	password:{type:String, required: true},
-	profile: {type:String, required: true},
-	styles: {type:Array, required: true},
-	price: {type:String, required: true},
+	username:{type:String, required: [true,'{PATH} is required!']},
+	password:{type:String, required: [true,'{PATH} is required!']},
+	profile: {type:String, required: [true,'{PATH} is required!']},
+	styles: {type:Array, required: [true,'{PATH} is required!']},
+	price: {type:String, required: [true,'{PATH} is required!']},
 	height: {type: String, default: ""},
-	portfolio:{type:Array, default:[]},
+	portfolio:{type:Array, default:[]},		//these are only photos
+	youtube_vids:{type:String},	//array of youtube links
 	locations: {type: Array, default:[]},
-	availiability:{type:Array, required:true},
+	availiability:{type:Array, required:[true,'{PATH} is required!']},
 	upcoming_lessons:{type:Array, default:[]},
 	contact:{type:Array, default:[]}		//TODO: make slug for contacts and sort contacts by lessons
 

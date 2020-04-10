@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 require('./db.js');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const fs = require('fs');
 
 // const {google} = require('googleapis');
 // const calendar = google.calendar('v3');
@@ -20,7 +21,7 @@ const sessionOptions = {
 
 app.use(session(sessionOptions));
 app.use(express.urlencoded({extended: false}));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
 
 
 app.set('view engine', 'hbs');
@@ -159,9 +160,7 @@ app.post('/add-student',(req,res)=>{
 		});
 		student.save((err, savedStudent)=>{
 			if(err){
-			 	console.log(err);
-				res.send(err);
-				res.redirect('/register-student');
+				res.redirect('/register-student',{errmsg:err});
 			}else{
 				res.redirect('/browse');
 			}
@@ -177,19 +176,24 @@ app.post('/add-teacher',(req,res)=>{
 		//salt: crypto.randomBytes(16).toString('hex'),
 		//password: hash(req.body.password+salt),
 		password: bcrypt.hash(req.body.password, saltRounds, function(err,hash){
+			let vid_arr = req.body.youtube_vids.split(',').map((url)=>{
+				return url.trim().split("v=")[1];
+			});
+
+			let vid_str = vid_arr.reduce((str,id)=>{return str+","+id}).trimLeft(",");
 			const teacher = new Teacher({	
-				username:req.body.username,portfolio: req.body.headshot,	//TODO: profile photo is supposed to be the first one in portfolio
+				username:req.body.username,
+				portfolio: req.body.headshot,	//TODO: profile photo is supposed to be the first one in portfolio
 				password: hash,
 				styles: req.body.styles,	//an array of selections
 				locations: req.body.locations,
 				price: req.body.price,
-				profile: req.body.profile
+				profile: req.body.profile,
+				youtube_vids: vid_arr	//get video ids separated by comma
 			});
 			teacher.save((err, savedTeacher)=>{
 				if(err){
-					console.log(err);
-					res.send(err);
-					res.redirect('/register-teacher');
+					res.redirect('/register-teacher',{errmsg: err});
 				}else{
 					res.redirect('/teacher-profile', {teacher: savedTeacher});//send to teacher's own profile, TODO: pass in self object
 				}
@@ -206,10 +210,41 @@ app.get('/me',(req,res)=>{
 app.get('/about', (req,res)=>{
 	res.render('about');
 });
-app.get('/profile-teacher', (req,res)=>{
+app.get('/profile-teacher/:teacher', (req,res)=>{
 	//TODO: how to pass teacher to here when redirect
-	res.render('profile-teacher',{teacher: teacher});
+	//res.send(req.params.teacher);
+
+
+
+	Teacher.findOne({slug: req.params.teacher},(err, teacherObj)=>{
+		if(err){
+			let errstr = "entry not found";
+			res.render('/browse',{errstr});
+		}
+
+		// console.log("teacher name :"+teacherObj.username);
+		// console.log("read file");
+		// let portfolio = teacherObj.portfolio.map((fpath)=>{		//TODO: alternatively build a directory for each user (look into hw3)
+		// 	console.log("File path: "+path.join(__dirname,"/public",fpath));
+		// 	let pic = fs.readFileSync(path.join(__dirname,"/public",fpath),'utf8', (err, pic)=>{
+		// 		if(err){
+		// 			return "error loading image";
+		// 		}
+		// 		else{
+		// 			return pic;
+		// 		}
+				
+		// 	});
+		// 	return pic;
+		// });	//read in photos from public folder
+
+		// console.log("portfolio: "+portfolio);
+		let portfolio = ["portfolio placeholder"];
+		res.render('profile-teacher',{teacher: teacherObj,portfolio});
+
+	});
 });
+
 app.get('/profile-student', (req,res)=>{
 	res.render('profile-student');
 });
@@ -269,11 +304,13 @@ app.get('/filter', (req,res)=>{	//can only choose up to one parameter to search
 	
 });
 app.get('/contact', (req,res)=>{
-	//access user's contacts
+	//access user's contacts 
 	res.render('contact');
 });
 app.get('/upcoming-lessons', (req,res)=>{
 	//access user's upcoming-lesson
+	//TODO: show student's partner or if they are looking for a partner
+	//implement three-way scheduling, invite partner first before having teachers approve
 	res.render('upcoming-lessons');
 });
 

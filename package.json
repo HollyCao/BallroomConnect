@@ -25,7 +25,8 @@
     "hbs": "^4.1.0",
     "mongoose": "^5.9.7",
     "mongoose-url-slugs": "^1.0.2",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "reactive-handlebars": "0.0.7"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"

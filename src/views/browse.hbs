@@ -32,10 +32,11 @@
 </form>
 <p>
 {{count}} teacher(s) availiable
+</t>{{errstr}}
 </p>
 
 {{#each teachers as |teacher|}}
-	<a href = '/{{$teacher.slug}}'>
+	<a href = "/profile-teacher/{{teacher.slug}}">
 		<div class = "entry">
 			{{teacher.portfilio.[0]}}
 			{{teacher.username}}
