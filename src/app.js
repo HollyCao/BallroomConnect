@@ -139,13 +139,20 @@ app.post('/login',(req,res)=>{
 				// }
 				bcrypt.compare(req.body.password, user.password, function(err,result){
 				if(err){
+					errormsg = " *system error";
+					res.render('login',{errormsg});
+				}
+				else if(result == false){
 					errormsg = " *username and password does not match";
 					res.render('login',{errormsg});
-				}else{	//TODO: potentially set expiration date for user login?
-					res.append('Set-Cookie',`user=${result}`);	//if it does not accept object, make a session id in schema (or use google id)
-					req.session.user = result;		//req.session.user stores current user information
+				}
+				else{	//TODO: potentially set expiration date for user login?
+					//res.append('Set-Cookie',`user=${result}`);	//if it does not accept object, make a session id in schema (or use google id)
+					req.session.user = user;		//req.session.user stores current user information
 					//user passport req.user object
 					req.session.userType =  "teacher";
+					console.log("during login, user is :"+req.session.user);
+					console.log("user type: "+req.session.userType);
 					res.redirect('/browse');	//no need to pass in user here, but store user somewhere
 				}
 				});
@@ -171,7 +178,10 @@ app.post('/login',(req,res)=>{
 						errormsg = " *username and password does not match";
 					 	res.render('login',{errormsg});
 					}else{
-						req.session.user = result;		//req.session.user stores current user information
+						req.session.user = user;		//req.session.user stores current user information
+						console.log("Login username: "+user.username);
+						console.log("Session username: "+req.session.user.username);
+						
 						req.session.userType = "student";
 						res.redirect('/browse');
 					}
@@ -212,6 +222,8 @@ app.post('/add-student',(req,res)=>{
 			if(err){
 				res.redirect('/register-student',{errmsg:err});
 			}else{
+				req.session.user = savedStudent;
+				req.session.userType = "student";
 				res.redirect('/browse');
 			}
 		});
@@ -226,9 +238,13 @@ app.post('/add-teacher',(req,res)=>{
 		//salt: crypto.randomBytes(16).toString('hex'),
 		//password: hash(req.body.password+salt),
 		password: bcrypt.hash(req.body.password, saltRounds, function(err,hash){
-			let vid_arr = req.body.youtube_vids.split(',').map((url)=>{
-				return url.trim().split("v=")[1];
-			});
+			let vid_arr;
+
+			if(req.body.youtube_vids == true){	//not undefined or empty string
+				vid_arr=req.body.youtube_vids.split(',').map((url)=>{
+					return url.trim().split("v=")[1];
+				});
+			}
 
 			let vid_str = vid_arr.reduce((str,id)=>{return str+","+id}).trimLeft(",");
 			const teacher = new Teacher({	
@@ -245,6 +261,8 @@ app.post('/add-teacher',(req,res)=>{
 				if(err){
 					res.redirect('/register-teacher',{errmsg: err});
 				}else{
+					req.session.user = "savedTeacher";
+					req.session.userType = "teacher";
 					res.redirect('/teacher-profile', {teacher: savedTeacher});//send to teacher's own profile, TODO: pass in self object
 				}
 			});
@@ -258,7 +276,6 @@ app.get('/me',(req,res)=>{
 	res.render('me',{user:req.session.user});	//TODO: use req.user for passport instead
 });
 app.get('/about', (req,res)=>{
-	console.log("user: "+req.session.user);
 	res.render('about',{user: req.session.user});
 });
 app.get('/profile-teacher/:teacher', (req,res)=>{
@@ -300,9 +317,12 @@ app.get('/profile-student', (req,res)=>{
 	res.render('profile-student',{user: req.session.user});
 });
 app.get('/browse', (req,res)=>{
-
+	let isStudent = false;
+	if(req.session.userType == "student"){
+		isStudent = true;
+	}
 	let allTeachers = Teacher.find({},(err, result)=>{
-		res.render('browse',{teachers: result, count:result.length,user: req.session.user});
+		res.render('browse',{teachers: result, count:result.length,user: req.session.user, isStudent});
 	});
 	
 });
