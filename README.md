@@ -165,7 +165,7 @@ Here's the [Site Map](documentation/site-map.jpeg)
 ## Research Topics
 
 
-* (5 points) Login with Google Account
+* (5 points) Login with Google Account with passport
     * I'm going to attempt to have the options for users to register with google accounts so they don't need to remember username and password
 * (2 points) Store images and videos on server with GridFS for Mongo DB
     * I'm going to allow teachers and students to upload their profile pictures on the database so any user can access it

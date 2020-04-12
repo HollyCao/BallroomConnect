@@ -2,16 +2,21 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const session = require('express-session');
+const session = require('express-session');	//TODO: switch to mongodb session store
 const mongoose = require('mongoose');
 require('./db.js');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const fs = require('fs');
+const http = require('http');
+const https = require('https');
+
+var passport = require('passport');
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+
 
 // const {google} = require('googleapis');
 // const calendar = google.calendar('v3');
-
 
 const sessionOptions = { 
     secret: 'ballroomConnectIsTrash', 
@@ -24,6 +29,33 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, '/public')));
 
 
+
+
+
+//use of passport based on instruction at: http://www.passportjs.org/docs/google/
+
+	const fn = path.join(__dirname, '../config.json');
+    const data = fs.readFileSync(fn);
+   	const conf = JSON.parse(data);
+
+
+passport.use(new GoogleStrategy({
+    clientID: conf.GOOGLE_CLIENT_ID,
+    clientSecret: conf.GOOGLE_CLIENT_SECRET,
+    callbackURL: "/browse"
+  },
+  function(accessToken, refreshToken, profile, done) {
+  		console.log("Profile: ");
+  		console.log(profile);
+  		console.log("Google name: "+profile.displayName);
+  		console.log("Google ID: "+profile.id);
+       User.findOrCreate({ googleId: profile.id }, function (err, user) {
+         return done(err, user);
+       });
+  }
+));
+
+
 app.set('view engine', 'hbs');
 
 const Student = mongoose.model('Student');
@@ -33,6 +65,22 @@ app.get('/', (req,res)=>{
 	res.render('login');
 });
 
+//TODO: add scope: https://www.googleapis.com/auth/admin.directory.resource.calendar
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login'] }));
+
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/' }),
+  function(req, res) {
+    res.redirect('/browse');
+  });
+
+// app.get('/logout',(req,res)=>{
+// 	//TODO: clear session stored user and implement usage of this
+// 	res.redirect('/');
+// });
 
 
 app.post('/login',(req,res)=>{
@@ -93,10 +141,12 @@ app.post('/login',(req,res)=>{
 				if(err){
 					errormsg = " *username and password does not match";
 					res.render('login',{errormsg});
-				}else{
+				}else{	//TODO: potentially set expiration date for user login?
+					res.append('Set-Cookie',`user=${result}`);	//if it does not accept object, make a session id in schema (or use google id)
 					req.session.user = result;		//req.session.user stores current user information
+					//user passport req.user object
 					req.session.userType =  "teacher";
-					res.render('browse');
+					res.redirect('/browse');	//no need to pass in user here, but store user somewhere
 				}
 				});
 			}
@@ -123,7 +173,7 @@ app.post('/login',(req,res)=>{
 					}else{
 						req.session.user = result;		//req.session.user stores current user information
 						req.session.userType = "student";
-						res.render('browse');
+						res.redirect('/browse');
 					}
 				});
 				
@@ -205,10 +255,11 @@ app.post('/add-teacher',(req,res)=>{
 
 app.get('/me',(req,res)=>{
 	//display private information: upcoming lessons and contacts
-	res.render('me',{user:req.session.user});	//TODO: pass in user for this session
+	res.render('me',{user:req.session.user});	//TODO: use req.user for passport instead
 });
 app.get('/about', (req,res)=>{
-	res.render('about');
+	console.log("user: "+req.session.user);
+	res.render('about',{user: req.session.user});
 });
 app.get('/profile-teacher/:teacher', (req,res)=>{
 	//TODO: how to pass teacher to here when redirect
@@ -240,80 +291,52 @@ app.get('/profile-teacher/:teacher', (req,res)=>{
 
 		// console.log("portfolio: "+portfolio);
 		let portfolio = ["portfolio placeholder"];
-		res.render('profile-teacher',{teacher: teacherObj,portfolio});
+		res.render('profile-teacher',{teacher: teacherObj,portfolio, user: req.session.user, type: req.session.userType});
 
 	});
 });
 
 app.get('/profile-student', (req,res)=>{
-	res.render('profile-student');
+	res.render('profile-student',{user: req.session.user});
 });
 app.get('/browse', (req,res)=>{
-	let allTeachers = Teacher.find({},(err, result)=>{		//TODO: stuck on trying to load teachers
-		res.render('browse',{teachers: result, count:result.length});
+
+	let allTeachers = Teacher.find({},(err, result)=>{
+		res.render('browse',{teachers: result, count:result.length,user: req.session.user});
 	});
 	
 });
 app.get('/filter', (req,res)=>{	//can only choose up to one parameter to search
-	// let filtered = Teacher.find({},(err, result, count)=>{
-
-	// 	let found = result.filter((teacher)=>{
-
-	// 		req.query.style.forEach()
-	// 		console.log("style data type"+typeof(teacher.styles)); //an object
-	// 		teacher.styles.contains(req.query.style)||teacher.locations.contains(req.query.location);
-	// 	});
-
-	// 	res.render('browse',{teachers: found, count:found.length});
-	// });
-
-
-	// let search = {};
-	// if(req.query.style != ""){
-	// 	console.log("style: "+req.query.style);
-	// 	search.style = req.query.style;
-	// }
-	// if(req.query.location != ""){
-	// 	console.log("location: "+req.query.location);
-	// 	search.location = req.query.location;
-	// }
-
-
 	Teacher.find({},(err, result)=>{	//list all teachers and do filter because the entries are arrays
 		let filtered = result.filter((teacher)=>{
 
-			console.log("inside filter function");
-			console.log(teacher.styles);
-			console.log(teacher.locations);
 			if(req.query.style != "" && req.query.location != ""){
-				return Array.from(teacher.styles).contains(req.query.style)&&Array.from(teacher.locations).contains(req.query.location);
+				return Array.prototype.includes.call(teacher.styles,req.query.style)&&Array.prototype.includes.call(teacher.locations,req.query.location);
 			}
 			else if(req.query.style != ""){
-				return Array.from(teacher.styles).contains(req.query.style);
+				return Array.prototype.includes.call(teacher.styles,req.query.style);
 			}
 			else if(req.query.location != ""){
-				return Array.from(teacher.locations).contains(req.query.location);
+				return Array.prototype.includes.call(teacher.locations,req.query.location);
 			}
 			else{		//not searching for anything
 				return true;
 			}
 			
 		});
-		res.render('browse',{teachers: filtered, count: filtered.length});
+		res.render('browse',{teachers: filtered, count: filtered.length,user: req.session.user});
 	});
 	
 });
-app.get('/contact', (req,res)=>{
-	//access user's contacts 
-	res.render('contact');
-});
-app.get('/upcoming-lessons', (req,res)=>{
-	//access user's upcoming-lesson
-	//TODO: show student's partner or if they are looking for a partner
-	//implement three-way scheduling, invite partner first before having teachers approve
-	res.render('upcoming-lessons');
-});
 
+//TODO: register certification with let's encrypt and activate the following code:
+
+// const certOptions = {
+// 	key: fs.readFileSync(__dirname+'/ssl/server.pem');
+// 	cert: fs.readFileSync(__dirname+'/ssl/server.crt');
+// }
+
+// https.createServer(certOptions,app).listen(app.get('port'));
 
 
 app.listen(3000);

@@ -1,4 +1,10 @@
-<h3>My Plans</h3>
+<h3>My Portal</h3>
+<div class = "nav">
+	<a href = "/browse">browse</a></br>
+	<a href = "/about">about us</a>
+</div>
+
+<p>Hi {{user.username}}!</p>
 <p>
 	Upcoming Lessons:</br>
 	{{#each user.upcoming_lessons as |lesson|}}

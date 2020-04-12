@@ -1,4 +1,8 @@
-
+<div class = "nav">
+	<a href = "/browse">browse</a></br>
+	<a href = "/me">my portal</a></br>
+	<a href = "/about">about us</a>
+</div>
 <h3>Teacher Profile:{{teacher.username}}</h3>
 	<div style = "text-align: left;margin-left: 60px; padding: 30px; background-color: lightyellow" >
 
@@ -19,6 +23,9 @@
 	<iframe width="720" height="405" src="https://www.youtube.com/embed/VIDEO_ID?playlist={{teacher.youtube_vids}}" allowfullscreen><a href = "https://www.youtube.com/watch?v={{youtube_vids}}">Dance Video</a></iframe>
 {{/if}}
 
+{{#if type == student}}
+<!--show google calendar-->
+{{/if}}
 
 
 <!--alternative youtube link inside iframe to support browsers without iframe-->

@@ -1,7 +1,8 @@
-<head>
-	<a href = "/">Back to Log In</a>
-</head>
-<body>
+<div class = "nav">
+	<a href = "/">back to log in</a></br>
+	<a href = "/about">about us</a>
+</div>
+
 <p>Welcome new student!</p>
 	{{#if errmsg}}
 		<ul>
@@ -23,5 +24,3 @@
 		About You:</br><textarea style = "width: 600px;height: 200px" name = "profile" value = "{{err.errors.profile.value}}"></textarea></br></br>
 
 		<input style = "width: 200px; height: 200px"type = "submit" value = "get started as student!">
-	</form>
-</body>

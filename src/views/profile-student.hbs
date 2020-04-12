@@ -1,8 +1,13 @@
+<!--TODO: abort render this page if type in url without loggin in or if teacher does not teach student-->
+<div class = "nav">
+	<a href = "/browse">browse</a></br>
+	<a href = "/me">my portal</a></br>
+	<a href = "/about">about us</a>
+</div>
+<h3>Student Profile: {{student.name}}</h3>
 
-	<h3>Student Profile: {{student.name}}</h3>
-
-	<div>
-		{{student.headshot}}
-		{{student.profile}}
-		{{student.styles}}
-	</div>
+<div>
+	{{student.headshot}}
+	{{student.profile}}
+	{{student.styles}}
+</div>

@@ -16,6 +16,10 @@ label{
 field{
 	display: inline-block;
 }
+
+.user-info{
+	display: none;
+}
 .entry{
 	padding: 5px;
 	border-style: outset;
@@ -25,14 +29,17 @@ field{
 
 .nav{
 	text-align: center;
-	background-color: khaki;
+	display: inline-block;
+	position: fixed;
+	right:10px;
+	top:5px;
 	font-size: 20 px;
 	font-family: "Comic Sans MS", cursive, sans-serif;
 }
 
 
 .g-signin2{
-	display: inline;
+	display: block;
 }
 
 .user-info{

@@ -1,26 +1,38 @@
+<div class = "nav">
+	<a href = "/about">about us</a>
+</div>
+
 <div id = "signin">
 	<form method = "POST" action = "/login">
 		Username: <input type = "text" name="username" value = ""></br></br>
 		Password: <input type = "password" name="password" value = ""></br></br>
 		I am a:</t>
 			<input type = "radio" name = "type" value = "student">
-			<label for = "student">Student</label>
+			Student
 			<input type = "radio" name = "type" value = "teacher">
-			<label for = "teacher">Teacher</label>
+			Teacher
 			</br></br>
 		<input type = "submit" value = "Login" style = "font-size: 20px">
 		</br></br>
 	</form>
 </div>
+
+<a href="/auth/google">Sign In with Google</a>
+
+
+
+
+
+
+
 <div id = "signup">
 
 	<p style = "color:red">{{errormsg}}</p>
 
 	don't have an account?</br>
-    <div class = "nav" style = "display:inline-block">
+    <div style = "display:inline-block">
         <a href="/register-teacher">register as teacher</a></br>
         <a href="/register-student">register as student</a></br>
-        <a href="/about">learn about ballroom connect</a></br>
     </div>
 
 

@@ -1,3 +1,7 @@
+<div class = "nav">
+	<a href = "/me">my portal</a></br>
+	<a href = "/about">about us</a>
+</div>
 <form method = "GET" action = "/filter">
 	Style:<select name = "style" style = "font-size: 20px">
 		<option value = "">-</option>
@@ -38,10 +42,10 @@
 {{#each teachers as |teacher|}}
 	<a href = "/profile-teacher/{{teacher.slug}}">
 		<div class = "entry">
-			{{teacher.portfilio.[0]}}
-			{{teacher.username}}
-			{{teacher.profile}}
-			{{teacher.styles}}
+			{{teacher.portfolio.[0]}}<br>
+			<h3>{{teacher.username}}</h3><br>
+			About: {{teacher.profile}}<br>
+			Styles:{{teacher.styles}}<br>
 		</div>
 	</a>
 {{/each}}
