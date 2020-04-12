@@ -239,14 +239,17 @@ app.post('/add-teacher',(req,res)=>{
 		//password: hash(req.body.password+salt),
 		password: bcrypt.hash(req.body.password, saltRounds, function(err,hash){
 			let vid_arr;
+			let vid_str;
 
-			if(req.body.youtube_vids == true){	//not undefined or empty string
+			if(req.body.youtube_vids != ""){	//not undefined or empty string
+				console.log("Youtube has contents")
 				vid_arr=req.body.youtube_vids.split(',').map((url)=>{
 					return url.trim().split("v=")[1];
 				});
+				vid_str = vid_arr.reduce((str,id)=>{return str+","+id}).trimLeft(",");
+			
 			}
 
-			let vid_str = vid_arr.reduce((str,id)=>{return str+","+id}).trimLeft(",");
 			const teacher = new Teacher({	
 				username:req.body.username,
 				portfolio: req.body.headshot,	//TODO: profile photo is supposed to be the first one in portfolio
@@ -255,15 +258,17 @@ app.post('/add-teacher',(req,res)=>{
 				locations: req.body.locations,
 				price: req.body.price,
 				profile: req.body.profile,
-				youtube_vids: vid_arr	//get video ids separated by comma
+				youtube_vids: vid_str	//get video ids separated by comma
 			});
 			teacher.save((err, savedTeacher)=>{
 				if(err){
 					res.redirect('/register-teacher',{errmsg: err});
 				}else{
-					req.session.user = "savedTeacher";
+					req.session.user = savedTeacher;
 					req.session.userType = "teacher";
-					res.redirect('/teacher-profile', {teacher: savedTeacher});//send to teacher's own profile, TODO: pass in self object
+					console.log("Registered teacher: "+req.session.user.username);
+					console.log("Registered slug: "+req.session.user.slug);
+					res.redirect(`/profile-teacher/${req.session.user.slug}`);//send to teacher's own profile, TODO: pass in self object
 				}
 			});
 		});
@@ -281,8 +286,6 @@ app.get('/about', (req,res)=>{
 app.get('/profile-teacher/:teacher', (req,res)=>{
 	//TODO: how to pass teacher to here when redirect
 	//res.send(req.params.teacher);
-
-
 
 	Teacher.findOne({slug: req.params.teacher},(err, teacherObj)=>{
 		if(err){
