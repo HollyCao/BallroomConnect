@@ -15,6 +15,7 @@ var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 
+
 // const {google} = require('googleapis');
 // const calendar = google.calendar('v3');
 
@@ -235,8 +236,6 @@ app.post('/add-student',(req,res)=>{
 app.post('/add-teacher',(req,res)=>{
 	//TODO: check if username already taken
 	
-		//salt: crypto.randomBytes(16).toString('hex'),
-		//password: hash(req.body.password+salt),
 		password: bcrypt.hash(req.body.password, saltRounds, function(err,hash){
 			let vid_arr;
 			let vid_str;
@@ -250,9 +249,12 @@ app.post('/add-teacher',(req,res)=>{
 			
 			}
 
+			let profile_pic = fs.readFileSync(req.body.headshot);
+
 			const teacher = new Teacher({	
 				username:req.body.username,
-				portfolio: req.body.headshot,	//TODO: profile photo is supposed to be the first one in portfolio
+				headshot: profile_pic,		//TODO: want to store this as binary data
+				portfolio: req.body.portfolio,	//TODO: profile photo is supposed to be the first one in portfolio
 				password: hash,
 				styles: req.body.styles,	//an array of selections
 				locations: req.body.locations,
@@ -278,8 +280,16 @@ app.post('/add-teacher',(req,res)=>{
 
 app.get('/me',(req,res)=>{
 	//display private information: upcoming lessons and contacts
-	res.render('me',{user:req.session.user});	//TODO: use req.user for passport instead
+	//make a dictionary of name of contact and their slug found in their own entries for redirection purposes
+	let studentSlug = req.session.user.contact.map((entry)=>{
+		let slug = Student.findOne({username:entry.name},(err, studentObj)=>{
+			return studentObj.slug;
+		});
+		return slug;
+	});
+	res.render('me',{user:req.session.user,studentSlug});	//TODO: use req.user for passport instead
 });
+
 app.get('/about', (req,res)=>{
 	res.render('about',{user: req.session.user});
 });
@@ -292,32 +302,23 @@ app.get('/profile-teacher/:teacher', (req,res)=>{
 			let errstr = "entry not found";
 			res.render('/browse',{errstr});
 		}
-
-		// console.log("teacher name :"+teacherObj.username);
-		// console.log("read file");
-		// let portfolio = teacherObj.portfolio.map((fpath)=>{		//TODO: alternatively build a directory for each user (look into hw3)
-		// 	console.log("File path: "+path.join(__dirname,"/public",fpath));
-		// 	let pic = fs.readFileSync(path.join(__dirname,"/public",fpath),'utf8', (err, pic)=>{
-		// 		if(err){
-		// 			return "error loading image";
-		// 		}
-		// 		else{
-		// 			return pic;
-		// 		}
-				
-		// 	});
-		// 	return pic;
-		// });	//read in photos from public folder
-
-		// console.log("portfolio: "+portfolio);
-		let portfolio = ["portfolio placeholder"];
-		res.render('profile-teacher',{teacher: teacherObj,portfolio, user: req.session.user, type: req.session.userType});
+		//teacherObj.portfolio = ["donnie1.jpeg","donnie2.jpeg"];
+		res.render('profile-teacher',{teacher: teacherObj, user: req.session.user, type: req.session.userType});
 
 	});
 });
 
-app.get('/profile-student', (req,res)=>{
-	res.render('profile-student',{user: req.session.user});
+app.get('/profile-student/:student', (req,res)=>{
+
+	Student.findOne({slug: req.params.student},(err, studentObj)=>{
+		if(err){
+			let errstr = "student not found";
+			res.render('/me',{errstr});
+		}
+		//teacherObj.portfolio = ["donnie1.jpeg","donnie2.jpeg"];
+		res.render('profile-student',{student: studentObj, user: req.session.user, type: req.session.userType});
+
+	});
 });
 app.get('/browse', (req,res)=>{
 	let isStudent = false;
@@ -329,7 +330,7 @@ app.get('/browse', (req,res)=>{
 	});
 	
 });
-app.get('/filter', (req,res)=>{	//can only choose up to one parameter to search
+app.get('/filter', (req,res)=>{ 	//can only choose up to one parameter to search
 	Teacher.find({},(err, result)=>{	//list all teachers and do filter because the entries are arrays
 		let filtered = result.filter((teacher)=>{
 
@@ -361,5 +362,7 @@ app.get('/filter', (req,res)=>{	//can only choose up to one parameter to search
 
 // https.createServer(certOptions,app).listen(app.get('port'));
 
+const PORT = 18613;
+app.listen(process.env.PORT || 3000);
 
-app.listen(3000);
+//app.listen(3000);

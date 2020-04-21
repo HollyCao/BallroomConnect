@@ -5,17 +5,29 @@
 </div>
 
 <p>Hi {{user.username}}!</p>
+<alert>{{errstr}}</alert>
 <p>
-	Upcoming Lessons:</br>
+	<h3>Upcoming Lessons:</h3>
 	{{#each user.upcoming_lessons as |lesson|}}
-		<div class = "entry">{{lesson}}</div>
+		<div class = "entry">
+			<label>Participants: </label>{{lesson.people}}</br>
+			<label>Time: </label>{{lesson.time}}</br>
+			<label>Location: </label>{{lesson.location}}</br>
+		</div>
 	{{/each}}
 </p>
 <p>
-	Contacts:</br>
+	<h3>Contacts:</h3>
 	{{#each user.contact as |c|}}
-	<a href = "/{{c.slug}}">{{c.name}}</a>
-	</t>Lessons:{{c.lessons}}</br>
+	<div class = "entry">
+		<a href = "/profile-student/{{studentSlug.(c.name)}}">
+			<label>Name: </label>{{c.name}}       <label>Total Lessons:</label>{{c.lessons.length}}</br>
+			{{#each c.lessons as |lesson|}}
+				<label>Time:</label>{{lesson.time}}        
+				<label>Notes:</label>{{lesson.notes}}</br>
+			{{/each}}
+		</a>
+	</div>
 	{{/each}}
 
 </p>

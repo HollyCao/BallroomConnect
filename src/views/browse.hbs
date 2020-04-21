@@ -1,5 +1,5 @@
 <div class = "nav">
-	<a href = "/me">my portal</a></br>
+	<a href = "/me">my portal</a>
 	<a href = "/about">about us</a>
 </div>
 <form method = "GET" action = "/filter">
@@ -42,10 +42,16 @@
 {{#each teachers as |teacher|}}
 	<a href = "/profile-teacher/{{teacher.slug}}">
 		<div class = "entry">
-			{{teacher.portfolio.[0]}}<br>
-			<h3>{{teacher.username}}</h3><br>
-			About: {{teacher.profile}}<br>
-			Styles:{{teacher.styles}}<br>
+			<img src = "{{teacher.headshot}}" class = "profile-pic" alt = "profile picture unavailiable">
+			<div style = "display: inline-block; width: 60%">
+				<h3>{{teacher.username}}</h3><br>
+				<label>About: </label>{{teacher.profile}}<br>
+				<label>Styles:</label>{{teacher.styles}}<br>
+				<label>Locations:</label>
+					{{#each teacher.locations}}
+						{{this}}
+					{{/each}}
+			</div>
 		</div>
 	</a>
 {{/each}}

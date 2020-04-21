@@ -4,31 +4,70 @@
 	<a href = "/about">about us</a>
 </div>
 <h3>Teacher Profile:{{teacher.username}}</h3>
-	<div style = "text-align: left;margin-left: 60px; padding: 30px; background-color: lightyellow" >
+	<div style = "margin-left: 60px; padding: 30px; background-color: lightyellow;" >
 
-		{{#each portfolio as |image|}}
-			{{image}}</br>
+		<img src="{{teacher.headshot}}" class = "profile-pic" alt="profile picture unavailiable">
+
+			<div class = "entry-info">
+				<label>Introduction:</label>{{teacher.profile}}</br></br>
+				<label>Styles: </label><field>{{teacher.styles}}</field></br></br>
+				<label>Pricing: </label><field>{{teacher.price}}</field></br></br>
+				{{#if teacher.height}}
+					<label>Height: </label><field>{{teacher.height}}</field></br></br>
+				{{/if}}
+			</div>
+
+
+
+		{{#if teacher.youtube_vids}}
+			<p>{{teacher.username}}'s work:</p>
+			<iframe width="720" height="405" src="https://www.youtube.com/embed/VIDEO_ID?playlist={{teacher.youtube_vids}}" allowfullscreen><a href = "https://www.youtube.com/watch?v={{youtube_vids}}">Dance Video</a></iframe>
+		{{/if}}
+
+		{{#if isStudent}}
+		<!--show google calendar-->
+		{{/if}}
+
+
+		<!--alternative youtube link inside iframe to support browsers without iframe-->
+
+
+	</div>
+
+<!--slideshow from tutorial https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_slideshow -->
+
+<script src = "slideshow.js"></script>
+
+
+{{#if teacher.portfolio}}
+<h3>Photo Gallery</h3>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<div id="portfolio" style = "display:block">
+	<div class="slideshow-container">
+		{{#each teacher.portfolio as |image|}}
+			
+			<div class="mySlides fade">
+				<div class="numbertext">{{@index}} / {{teacher.portfolio.length}}</div>
+					<img src="/image/{{image}}" style="width:50%; position:relative">
+				 	<div class="text">{{teacher.username}}</div>	<!--TODO: optionally add caption text for each picture in portfolio-->
+				
+			</div>
 		{{/each}}
 
-		{{teacher.profile}}</br></br>
-		<label>Styles: </label><field>{{teacher.styles}}</field></br></br>
-		<label>Pricing: </label><field>{{teacher.price}}</field></br></br>
-		<label>Height: </label><field>{{teacher.height}}</field></br></br>
+		<a class="prev" style = "left:25%" onclick="plusSlides(-1)">&#10094;</a>
+		<a class="next" style = "right:25%" onclick="plusSlides(1)">&#10095;</a>
+
+	</div>
+	<br>
 
 
-
-
-{{#if teacher.youtube_vids}}
-	<p>{{teacher.username}}'s work:</p>
-	<iframe width="720" height="405" src="https://www.youtube.com/embed/VIDEO_ID?playlist={{teacher.youtube_vids}}" allowfullscreen><a href = "https://www.youtube.com/watch?v={{youtube_vids}}">Dance Video</a></iframe>
-{{/if}}
-
-{{#if isStudent}}
-<!--show google calendar-->
-{{/if}}
-
-
-<!--alternative youtube link inside iframe to support browsers without iframe-->
-
+	<div style = "text-align: center">
+		{{#each teacher.portfolio}}
+			  <span class="dot" onclick="currentSlide{{@index}}"></span>	<!--TODO: deal with dots not fitting page -->
+		{{/each}}
+	</div>
 
 </div>
+{{/if}}
