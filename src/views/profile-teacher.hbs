@@ -46,15 +46,16 @@
 
 <div id="portfolio" style = "display:block">
 	<div class="slideshow-container">
-		{{#each teacher.portfolio as |image|}}
-			
 			<div class="mySlides fade">
 				<div class="numbertext">{{@index}} / {{teacher.portfolio.length}}</div>
-					<img src="/image/{{image}}" style="width:50%; position:relative">
+				portfolio: {{teacher.portfolio}}
+			
+				 /image/{{lookup teacher.portfolio 0}}
+				image path: /image/{{lookup teacher.portfolio @index}}
+					<img src="/image/{{lookup teacher.portfolio @index}}" style="width:50%; position:relative">
 				 	<div class="text">{{teacher.username}}</div>	<!--TODO: optionally add caption text for each picture in portfolio-->
 				
 			</div>
-		{{/each}}
 
 		<a class="prev" style = "left:25%" onclick="plusSlides(-1)">&#10094;</a>
 		<a class="next" style = "right:25%" onclick="plusSlides(1)">&#10095;</a>

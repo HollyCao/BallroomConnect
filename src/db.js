@@ -52,6 +52,7 @@ if (process.env.NODE_ENV === 'PRODUCTION') {
 
    	const conf = JSON.parse(data);
     dbconf = conf.dbconf;
+    console.log("Mongo configuration: "+dbconf);
 } else {
     dbconf = 'mongodb://localhost/ballroom';
 }

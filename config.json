@@ -1,5 +1,5 @@
 {
-  "dbconf": "mongodb://sc6220:aquzTyXe@class-mongodb.cism.nyu.edu/sc6220",
+  "dbconf": "mongodb://Fred_Astaire:lilFredie@localhost/ballroom",
   "GOOGLE_CLIENT_ID":"676146522776-ke04k84usoaq9r5qn5qs5pnrfk84sj8q.apps.googleusercontent.com",
 	"GOOGLE_CLIENT_SECRET =":"c-EoGrDwVippyDB59zEr79SV"
 

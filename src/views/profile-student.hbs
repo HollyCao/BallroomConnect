@@ -4,10 +4,12 @@
 	<a href = "/me">my portal</a></br>
 	<a href = "/about">about us</a>
 </div>
-<h3>Student Profile: {{student.name}}</h3>
+<h3>Student Profile: {{student.username}}</h3>
 
 <div>
-	{{student.headshot}}
-	{{student.profile}}
-	{{student.styles}}
+	<img src ="/image/{{student.slug}}/{{student.headshot}}" height=200px></br>
+	<div style = "text-align:left; border: inset; margin: 10%;background-color:khaki">
+		<label>About: </label>{{student.profile}}</br></br>
+		<label>Interest: </label>{{student.styles}}</br>
+	</div>
 </div>

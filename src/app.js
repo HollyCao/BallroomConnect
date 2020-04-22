@@ -12,7 +12,7 @@ const http = require('http');
 const https = require('https');
 
 var passport = require('passport');
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var GoogleStrategy = require('passport-google-oauth2').Strategy;
 
 
 
@@ -39,19 +39,17 @@ app.use(express.static(path.join(__dirname, '/public')));
     const data = fs.readFileSync(fn);
    	const conf = JSON.parse(data);
 
-
+console.log("client ID: "+conf.GOOGLE_CLIENT_ID+" secret: "+conf.GOOGLE_CLIENT_SECRET);
 passport.use(new GoogleStrategy({
     clientID: conf.GOOGLE_CLIENT_ID,
     clientSecret: conf.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/browse"
+    callbackURL: "/browse",
+    passReqToCallback: true
   },
   function(accessToken, refreshToken, profile, done) {
-  		console.log("Profile: ");
-  		console.log(profile);
-  		console.log("Google name: "+profile.displayName);
-  		console.log("Google ID: "+profile.id);
-       User.findOrCreate({ googleId: profile.id }, function (err, user) {
-         return done(err, user);
+  		User.findOrCreate({ googleId: profile.id }, function (err, user) {
+       		console.log(user);
+        	return done(err, user);
        });
   }
 ));
@@ -73,10 +71,7 @@ app.get('/auth/google',
 
 
 app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/' }),
-  function(req, res) {
-    res.redirect('/browse');
-  });
+  passport.authenticate('google', { successRedirect: '/browse',failureRedirect: '/' }));
 
 // app.get('/logout',(req,res)=>{
 // 	//TODO: clear session stored user and implement usage of this
@@ -210,12 +205,16 @@ app.get('/register-student', (req,res)=>{
 app.post('/add-student',(req,res)=>{
 	//TODO: check if username already taken
 
-
+	console.log("add student");
+	console.log("existing students: ");
+	Student.find((err, obj)=>{
+		console.log(obj)
+	});
 	bcrypt.hash(req.body.password, saltRounds, function(err,hash){
 		const student = new Student({	
 			username:req.body.username,
 			password: hash,
-			headshot: req.body.headshot,
+			headshot: req.body.headshot,	//TODO: make sure that this has to be from image/slug for each user
 			styles: req.body.styles,	//here style is stored as strings because it is for reference purpose only
 			profile: req.body.profile
 		});
@@ -242,7 +241,7 @@ app.post('/add-teacher',(req,res)=>{
 
 			if(req.body.youtube_vids != ""){	//not undefined or empty string
 				console.log("Youtube has contents")
-				vid_arr=req.body.youtube_vids.split(',').map((url)=>{
+				viheightd_arr=req.body.youtube_vids.split(',').map((url)=>{
 					return url.trim().split("v=")[1];
 				});
 				vid_str = vid_arr.reduce((str,id)=>{return str+","+id}).trimLeft(",");
@@ -280,15 +279,15 @@ app.post('/add-teacher',(req,res)=>{
 
 app.get('/me',(req,res)=>{
 	//display private information: upcoming lessons and contacts
-	//make a dictionary of name of contact and their slug found in their own entries for redirection purposes
-	let studentSlug = req.session.user.contact.map((entry)=>{
-		let slug = Student.findOne({username:entry.name},(err, studentObj)=>{
-			return studentObj.slug;
-		});
-		return slug;
+	//contact object has name, slug, and amount of lessons
+	if(req.session.userType == "teacher"){
+		res.render('me',{user:req.session.user,teacher:true});	//TODO: use req.user for passport instead
+	}
+	else{	//student page
+		res.render('me',{user:req.session.user, teacher:false});
+	}
+
 	});
-	res.render('me',{user:req.session.user,studentSlug});	//TODO: use req.user for passport instead
-});
 
 app.get('/about', (req,res)=>{
 	res.render('about',{user: req.session.user});
@@ -309,7 +308,8 @@ app.get('/profile-teacher/:teacher', (req,res)=>{
 });
 
 app.get('/profile-student/:student', (req,res)=>{
-
+	console.log("root directory: ");
+	console.log(process.cwd());
 	Student.findOne({slug: req.params.student},(err, studentObj)=>{
 		if(err){
 			let errstr = "student not found";
@@ -321,6 +321,8 @@ app.get('/profile-student/:student', (req,res)=>{
 	});
 });
 app.get('/browse', (req,res)=>{
+	console.log("google user");
+	console.log(req.user);
 	let isStudent = false;
 	if(req.session.userType == "student"){
 		isStudent = true;
@@ -357,7 +359,7 @@ app.get('/filter', (req,res)=>{ 	//can only choose up to one parameter to search
 
 // const certOptions = {
 // 	key: fs.readFileSync(__dirname+'/ssl/server.pem');
-// 	cert: fs.readFileSync(__dirname+'/ssl/server.crt');
+// 	cert: fs.recd adFileSync(__dirname+'/ssl/server.crt');
 // }
 
 // https.createServer(certOptions,app).listen(app.get('port'));
