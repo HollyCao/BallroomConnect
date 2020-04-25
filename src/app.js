@@ -12,22 +12,50 @@ const http = require('http');
 const https = require('https');
 
 var passport = require('passport');
-var GoogleStrategy = require('passport-google-oauth2').Strategy;
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 
 
 // const {google} = require('googleapis');
 // const calendar = google.calendar('v3');
-
+app.use(passport.initialize());
 const sessionOptions = { 
     secret: 'ballroomConnectIsTrash', 
     saveUninitialized: false, 
     resave: false 
 };
 
+
+app.use(passport.session());
 app.use(session(sessionOptions));
 app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, '/public')));
+
+passport.serializeUser(function(user, done) {
+	console.log("serialize");
+  	done(null, user.id);
+});
+
+//query database, TODO: check if it is a teacher or student
+passport.deserializeUser(function(id, done) {
+	console.log("deserialize");
+  Student.findOne({googleId: id}, function(err, user) {
+  	// if(err){
+  	// 	Teacher.findOne({googleId: id}, function(err, user){
+  	// 		if(!err){
+  	// 			req.session.userType = "teacher";
+  	// 		}
+  	// 		done(err, user);
+  	// 	});
+  	// }
+  	// else{
+  	// 	req.session.userType = "student";
+   //  	done(err, user);
+  	// }
+  	done(err, user);	//TODO: enable search for teacher and student
+
+  });
+});
 
 
 
@@ -40,16 +68,41 @@ app.use(express.static(path.join(__dirname, '/public')));
    	const conf = JSON.parse(data);
 
 console.log("client ID: "+conf.GOOGLE_CLIENT_ID+" secret: "+conf.GOOGLE_CLIENT_SECRET);
-passport.use(new GoogleStrategy({
+
+const options = {
     clientID: conf.GOOGLE_CLIENT_ID,
     clientSecret: conf.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/browse",
-    passReqToCallback: true
-  },
+    callbackURL: "/browse"
+
+}
+passport.use(new GoogleStrategy(options,
   function(accessToken, refreshToken, profile, done) {
-  		User.findOrCreate({ googleId: profile.id }, function (err, user) {
-       		console.log(user);
-        	return done(err, user);
+  		console.log("Google login info: ");
+  		console.log({accessToken, refreshToken, profile});
+  		Student.findOne({ googleId: profile.id }, function (err, userS) {
+       		if(!userS){
+       			Teacher.findOne({googleId: profile.id},function(err, userT){
+       				if(!userT){
+       					//needs to register first
+       					req.session.googleId = profile.id;
+       					res.render('login',{errormsg: "No existing account found. Please register"});
+       					// const s = new Student({	//TODO: ask if want to register as teacher or student
+       					// 	googleId: profile.id,
+          		// 			username: profile.name.givenName
+       					// });
+       				}
+       				else{
+       					req.session.userType = "teacher";
+       					return done(err,userT);
+       				}
+       				
+       			});
+       		}
+       		else{
+       			req.session.userType = "student";
+        		return done(err, userS);
+       		}
+       		
        });
   }
 ));
@@ -71,7 +124,9 @@ app.get('/auth/google',
 
 
 app.get('/auth/google/callback', 
-  passport.authenticate('google', { successRedirect: '/browse',failureRedirect: '/' }));
+  passport.authenticate('google', {failureRedirect: '/' }),function(req,res){
+	res.redirect('/browse');
+});
 
 // app.get('/logout',(req,res)=>{
 // 	//TODO: clear session stored user and implement usage of this
@@ -118,7 +173,7 @@ app.post('/login',(req,res)=>{
 
 
 
-
+	
 	if(req.body.type == "teacher"){
 		let user = Teacher.findOne({username : req.body.username},(err, user)=>{
 			if(err){
@@ -212,6 +267,7 @@ app.post('/add-student',(req,res)=>{
 	});
 	bcrypt.hash(req.body.password, saltRounds, function(err,hash){
 		const student = new Student({	
+			googleId: req.session.googleId,
 			username:req.body.username,
 			password: hash,
 			headshot: req.body.headshot,	//TODO: make sure that this has to be from image/slug for each user
@@ -250,7 +306,8 @@ app.post('/add-teacher',(req,res)=>{
 
 			let profile_pic = fs.readFileSync(req.body.headshot);
 
-			const teacher = new Teacher({	
+			const teacher = new Teacher({
+				googleId: req.session.googleId,	
 				username:req.body.username,
 				headshot: profile_pic,		//TODO: want to store this as binary data
 				portfolio: req.body.portfolio,	//TODO: profile photo is supposed to be the first one in portfolio
@@ -321,8 +378,8 @@ app.get('/profile-student/:student', (req,res)=>{
 	});
 });
 app.get('/browse', (req,res)=>{
-	console.log("google user");
-	console.log(req.user);
+	console.log("google user",req.user);
+	//console.log("Username: "+req.user.name);
 	let isStudent = false;
 	if(req.session.userType == "student"){
 		isStudent = true;

@@ -1,9 +1,9 @@
-var Handlebars = require('handlebars');
+// var Handlebars = require('handlebars');
 
-Handlebars.registerHelper("inc", function(value, options)
-{
-    return parseInt(value) + 1;
-});
+// Handlebars.registerHelper("inc", function(value, options)
+// {
+//     return parseInt(value) + 1;
+// });
 
 
 var slideIndex = 1;
@@ -18,8 +18,10 @@ function currentSlide(n) {
 }
 
 function showSlides(n) {
+  console.log("show slide "+n);
   var i;
-  var slides = document.getElementsByClassName("mySlides");
+  var slides = document.querySelectorAll("#mySlides");
+
   var dots = document.getElementsByClassName("dot");
   if (n > slides.length) {slideIndex = 1}    
   if (n < 1) {slideIndex = slides.length}

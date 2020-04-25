@@ -20,6 +20,7 @@ mongoose.model('Student',Student);
 //a teacher entry, non-required value defaulted for templating purpose
 
 const Teacher = new mongoose.Schema({
+	googleId: {type:String},
 	username:{type:String, required: [true,'{PATH} is required!']},
 	password:{type:String, required: [true,'{PATH} is required!']},
 	profile: {type:String, required: [true,'{PATH} is required!']},
