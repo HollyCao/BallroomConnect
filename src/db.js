@@ -1,9 +1,18 @@
-const mongoose = require('mongoose'),
-	URLSlugs = require('mongoose-url-slugs');
+const mongoose = require('mongoose');
+const URLSlugs = require('mongoose-url-slugs');
 
 //a student entry, non-required value defaulted for templating purpose
+const User = new mongoose.Schema({
+    _id: String,
+    name: String,
+    profile: String
+});
+
+mongoose.model('User', User);
+
 
 const Student = new mongoose.Schema({
+	_id: { type: mongoose.ObjectId, auto: true },
 	username:{type:String, required:[true,'{PATH} is required!']},
 	password:{type:String, required: [true,'{PATH} is required!']},
 	profile:{type:String, required:[true,'{PATH} is required!']},
@@ -20,7 +29,7 @@ mongoose.model('Student',Student);
 //a teacher entry, non-required value defaulted for templating purpose
 
 const Teacher = new mongoose.Schema({
-	googleId: {type:String},
+	_id: { type: mongoose.ObjectId, auto: true },
 	username:{type:String, required: [true,'{PATH} is required!']},
 	password:{type:String, required: [true,'{PATH} is required!']},
 	profile: {type:String, required: [true,'{PATH} is required!']},
@@ -53,11 +62,14 @@ if (process.env.NODE_ENV === 'PRODUCTION') {
 
    	const conf = JSON.parse(data);
     dbconf = conf.dbconf;
-    console.log("Mongo configuration: "+dbconf);
 } else {
     dbconf = 'mongodb://localhost/ballroom';
 }
 
-
 mongoose.connect(dbconf);
+// let db = mongoose.connection;
+// db.on('error', console.error.bind(console, 'connection error:'));
+// db.once('open', function() {
+//   console.log('connected');
+// });
 

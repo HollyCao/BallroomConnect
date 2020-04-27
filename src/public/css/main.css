@@ -17,8 +17,12 @@ field{
 	display: inline-block;
 }
 
+.g-signin2{
+  display: inline-block;
+  left:50%;
+}
 .user-info{
-	display: none;
+	display: inline-block;
 }
 .entry{
 	padding: 5px;
@@ -44,11 +48,6 @@ field{
 	top:5px;
 	font-size: 20 px;
 	font-family: "Comic Sans MS", cursive, sans-serif;
-}
-
-
-.g-signin2{
-	display: block;
 }
 
 .user-info{

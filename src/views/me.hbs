@@ -7,35 +7,24 @@
 <p>Hi {{user.username}}!</p>
 <alert>{{errstr}}</alert>
 <p>
-	<h3>Upcoming Lessons:</h3>
-	{{#each user.upcoming_lessons as |lesson|}}
-		<div class = "entry">
-			<label>Participants: </label>{{lesson.people}}</br>
-			<label>Time: </label>{{lesson.time}}</br>
-			<label>Location: </label>{{lesson.location}}</br>
-		</div>
-	{{/each}}
+	<h3>Upcoming Lessons:</h3></br>
+		{{#each user.upcoming_lessons as |lesson|}}
+			<div class = "entry">
+				<label>Participants: </label>{{lesson.people}}</br>
+				<label>Time: </label>{{lesson.time}}</br>
+				<label>Location: </label>{{lesson.location}}</br>
+			</div>
+		{{/each}}
+
 </p>
 <p>
 	<h3>Contacts:</h3>
-	{{#if teacher}}
-		{{#each user.contact as |c|}}
-			<a href = "/profile-student/{{c.slug}}">
-			<div class = "entry">
-					<label>Name: </label>{{c.name}}<br>     
-					<label>Total Lessons:</label>{{c.lessons.length}}</br>
-					{{#each c.lessons as |lesson|}}
-						<label>Time:</label>{{lesson.time}} </br>       
-						<label>Notes:</label>{{lesson.notes}}</br>
-					{{/each}}
-			</div>
-			</a>
-		{{/each}}
-	{{else}}
-		{{#each user.contact as |c|}}
-				<a href = "/profile-teacher/{{c.slug}}">
+	(people you have scheduled lessons with)
+		{{#if teacher}}
+			{{#each user.contact as |c|}}
+				<a href = "/profile-student/{{c.slug}}">
 				<div class = "entry">
-						<label>Name: </label>{{c.name}}     </br>  
+						<label>Name: </label>{{c.name}}<br>     
 						<label>Total Lessons:</label>{{c.lessons.length}}</br>
 						{{#each c.lessons as |lesson|}}
 							<label>Time:</label>{{lesson.time}} </br>       
@@ -43,7 +32,20 @@
 						{{/each}}
 				</div>
 				</a>
-		{{/each}}
-	{{/if}}
+			{{/each}}
+		{{else}}
+			{{#each user.contact as |c|}}
+					<a href = "/profile-teacher/{{c.slug}}">
+					<div class = "entry">
+							<label>Name: </label>{{c.name}}     </br>  
+							<label>Total Lessons:</label>{{c.lessons.length}}</br>
+							{{#each c.lessons as |lesson|}}
+								<label>Time:</label>{{lesson.time}} </br>       
+								<label>Notes:</label>{{lesson.notes}}</br>
+							{{/each}}
+					</div>
+					</a>
+			{{/each}}
+		{{/if}}
 
 </p>

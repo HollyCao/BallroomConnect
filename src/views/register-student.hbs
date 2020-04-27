@@ -5,11 +5,7 @@
 
 <p>Welcome new student!</p>
 	{{#if errmsg}}
-		<ul>
-		{{#each errmsg.errors}}
-			<li><alert>{{message}}</alert></li>
-		{{/each}}
-		</ul>
+		<alert>{{message}}</alert>
 	{{/if}}
 
 	<form method = "POST" action = "/add-student">
