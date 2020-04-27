@@ -12,11 +12,21 @@
 	{{/if}}
 
 <form method = "POST" action = "/add-teacher">
-	Username:<input type = "text" name = "username" value = ""><alert>*required</alert></br></br>
 
-	Password:<input type = "password" name = "password" value = ""><alert>*required</alert></br></br>
 
-	Profile Photo:<input type = "file" name = "headshot" accept="image/*"><alert>*required</alert></br></br>
+	{{#if USER_PROFILE}}
+		Username:<input type = "text" name = "username" value = "{{USER_PROFILE.displayName}}"><alert>*required</alert></br></br>
+
+		<input type = "password" name = "password" style = "display: none" value = {{USER_PROFILE.id}}>
+
+		<input type = "text" name = "headshot" style = "display: none" value = {{USER_PROFILE._json.picture}}>
+	{{else}}
+		Username:<input type = "text" name = "username" value = ""><alert>*required</alert></br></br>
+
+		Password:<input type = "password" name = "password" value = ""><alert>*required</alert></br></br>
+
+		Profile Photo:<input type = "file" name = "headshot" accept="image/*"><alert>*required</alert></br></br>
+	{{/if}}
 
 	Portfolio:<input type = "file" name = "portfolio" accept="image/*, video/*" multiple>(hold control or shift to select multiple)</br></br>
 
@@ -33,6 +43,7 @@
 		<option value = "hustle">Hustle</option>
 		<option value = "salsa">Salsa</option>
 		<option value = "zouk">Zouk</option>
+		<option value = "flamenco">Flamenco</option>
 		<option value = "argentine-tango">Argentine Tango</option>
 		<option value = "bachata">bachata</option>
 		<option value = "silverscreen">Silver Screen</option>

@@ -2,14 +2,6 @@ const mongoose = require('mongoose');
 const URLSlugs = require('mongoose-url-slugs');
 
 //a student entry, non-required value defaulted for templating purpose
-const User = new mongoose.Schema({
-    _id: String,
-    name: String,
-    profile: String
-});
-
-mongoose.model('User', User);
-
 
 const Student = new mongoose.Schema({
 	//_id: { type: mongoose.ObjectId, auto: true },
@@ -30,7 +22,7 @@ mongoose.model('Student',Student);
 //a teacher entry, non-required value defaulted for templating purpose
 
 const Teacher = new mongoose.Schema({
-	_id: { type: mongoose.ObjectId, auto: true },
+	googleId: String,
 	username:{type:String, required: [true,'{PATH} is required!']},
 	password:{type:String, required: [true,'{PATH} is required!']},
 	profile: {type:String, required: [true,'{PATH} is required!']},

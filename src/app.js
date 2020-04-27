@@ -37,7 +37,7 @@ app.use(express.static(path.join(__dirname, '/public')));
     const data = fs.readFileSync(fn);
    	const conf = JSON.parse(data);
 
-console.log("client ID: "+conf.GOOGLE_CLIENT_ID+" secret: "+conf.GOOGLE_CLIENT_SECRET);
+//console.log("client ID: "+conf.GOOGLE_CLIENT_ID+" secret: "+conf.GOOGLE_CLIENT_SECRET);
 
 passport.serializeUser(function(user, done) {
   	done(null, user.id);
@@ -49,21 +49,7 @@ passport.deserializeUser(function(id, done) {
 	User.findById(id, function(err, user) {
     	done(err, user);
   	});
-  // Student.findOne({googleId: id}, function(err, user) {
-  // 	if(err){
-  // 		Teacher.findOne({googleId: id}, function(err, user){
-  // 			if(!err){
-  // 				req.session.userType = "teacher";
-  // 			}
-  // 			done(err, user);
-  // 		});
-  // 	}
-  // 	else{
-  // 		req.session.userType = "student";
-  //   	done(err, user);
-  // 	}
- 
-  // });
+
 });
 
 
@@ -78,68 +64,42 @@ const options = {
 let USER_PROFILE;	//google profile
 let ACCESS_TOKEN;
 let REFRESH_TOKEN;
+let USER_TYPE;
 
 let USER_ENTRY;		//mongo db User object profile
 
 passport.use(new GoogleStrategy(options,
   function(accessToken, refreshToken, profile, done) {
-  		console.log("Google login info: ");
-  		console.log({accessToken, refreshToken, profile});
-  	//User.findOne({_id: mongoose.Types.ObjectId(parseInt(profile.id.toString(16)+"abcdeff",16)) }, function (err, user) {
-    Student.findOne({googleId: profile.id }, function (err, user) {
-     	console.log("google id: "+profile.id);
+  		//console.log("Google login info: ");
+  		//console.log({accessToken, refreshToken, profile});
+  	Student.findOne({googleId: profile.id }, function (err, user) {
       if(!user) {
-      	console.log("student user not found.")
-      	let errormsg = " *your google account has not been registered. ";
-       	USER_PROFILE = profile;		//although not registered, the button does allow the user to log in to google account and now they can assign it into user entry
-		// ACCESS_TOKEN  = accessToken;
-		// REFRESH_TOKEN = refreshToken;
+      	//keep in mind that err and user are overriden below
+      	Teacher.findOne({googleId: profile.id}, function(err, user){
+      		if(!user){	//not registered, the button does allow the user to log in to google account and now they can assign it into user entry
+      			USER_PROFILE = profile;
+      			return done(err, user);
+      		}
+      		else{
+      			USER_PROFILE = profile;
+		      	USER_TYPE = "teacher";
+		      	USER_ENTRY = user;		//TODO: make this more secure so it is not just a plain text user entry option, maybe hash it like req.session
+        		return done(err, user);
+      		}
 
-		
-		return done(err, user);
-		// res.render('login',{errormsg});
-  //       // const u = new User({
-  //       //   googleId: profile.id,
-  //       //   name: profile.name.givenName,
-  //       //   profile: profile._json.picture 
-  //       // });
-  //       // u.save((err, user) => {
-  //       // 	req.session.user = u;
-  //       //   return done(err, user);
-  //       // });
+      	});
+       	// ACCESS_TOKEN  = accessToken;
+		// REFRESH_TOKEN = refreshToken;
       } else {
 
-      	console.log("registered user found");
+      	console.log("registered student user found");
       	USER_PROFILE = profile;
+      	USER_TYPE = "student";
+		
       	USER_ENTRY = user;		//TODO: make this more secure so it is not just a plain text user entry option, maybe hash it like req.session
         return done(err, user);
       }
     });
-  		// Student.findOne({ googleId: profile.id }, function (err, userS) {
-    //    		if(!userS){
-    //    			Teacher.findOne({googleId: profile.id},function(err, userT){
-    //    				if(!userT){
-    //    					//needs to register first
-    //    					req.session.googleId = profile.id;
-    //    					res.render('login',{errormsg: "No existing account found. Please register"});
-    //    					// const s = new Student({	//TODO: ask if want to register as teacher or student
-    //    					// 	googleId: profile.id,
-    //       		// 			username: profile.name.givenName
-    //    					// });
-    //    				}
-    //    				else{
-    //    					req.session.userType = "teacher";
-    //    					return done(err,userT);
-    //    				}
-       				
-    //    			});
-    //    		}
-    //    		else{
-    //    			req.session.userType = "student";
-    //     		return done(err, userS);
-    //    		}
-       		
-    //    });
   }
 ));
 
@@ -157,7 +117,6 @@ app.set('view engine', 'hbs');
 
 const Student = mongoose.model('Student');
 const Teacher = mongoose.model('Teacher');
-const User = mongoose.model('User');
 //route handlers
 app.get('/', (req,res)=>{
 	res.render('login');
@@ -166,34 +125,11 @@ app.get('/', (req,res)=>{
 //TODO: add scope: https://www.googleapis.com/auth/admin.directory.resource.calendar
 
 app.get('/auth/google',
-  passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login'] }));
+  passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login','https://www.googleapis.com/auth/calendar','https://www.googleapis.com/auth/calendar.events'] }));
 app.get('/auth/google/callback', 
   passport.authenticate('google', {failureRedirect: '/' }),function(req,res){
-	// console.log("req.user: ");
-	// console.log(req.user);
-	// onSignIn(req.user);
 	res.redirect('/browse');
 });
-
-// function onSignIn(googleUser) {
-// 		console.log("signed in");
-// 	  var profile = googleUser.getBasicProfile();	//TODO: have if statement, determine type of user and send to appropriate starting page
-// 	  $(".data").css("display","inline-block"); //TODO: fix this so that it appears on the same line as title but to the side
-// 	  $("#pic").attr('src',profile.getImageUrl());
-// 	  $("#email").text(profile.getEmail())
-// 	}
-
-// app.get('/login/google', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
-// 	console.log("Logging in via Google");
-// });
-
-// app.get('/login/google/return', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
-// 	// Passportjs sends back the user attached to the request object, I set it as part of the session
-// 	req.session.user = req.user;
-// 	// Redirect to budgeteer after the session has been set
-// 	res.redirect("/browse");
-// });
-
 
 
 // app.get('/logout',(req,res)=>{
@@ -204,41 +140,6 @@ app.get('/auth/google/callback',
 
 app.post('/login',(req,res)=>{
 	let errormsg = "";
-// 	//implementing google login
-// 	if(req.getHeader("X-Requested-With")== null){
-// 		errormsg = "Server error: no 'X-Requested-With' header";
-// 		res.render("login",{errormsg});
-// 	}
-
-// 	String CLIENT_SECRET_FILE = "client_secret.json";
-// 	// Exchange auth code for access token
-// 	GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new FileReader(CLIENT_SECRET_FILE));
-// 	GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
-// 				new NetHttpTransport(),
-// 	              JacksonFactory.getDefaultInstance(),
-// 	              "https://oauth2.googleapis.com/token",
-// 	              clientSecrets.getDetails().getClientId(),
-// 	              clientSecrets.getDetails().getClientSecret(),
-// 	              authCode,
-// 	              REDIRECT_URI)  // Specify the same redirect URI that you use with your web
-// 	                             // app. If you don't have a web version of your app, you can
-// 	                             // specify an empty string.
-// 	              .execute();
-
-// 	String accessToken = tokenResponse.getAccessToken();
-// //TODO: call calendar API
-// // Get profile info from ID token
-// GoogleIdToken idToken = tokenResponse.parseIdToken();
-// GoogleIdToken.Payload payload = idToken.getPayload();
-// String userId = payload.getSubject();  // Use this value as a key to identify a user.
-// String email = payload.getEmail();
-// boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
-// String name = (String) payload.get("name");
-// String pictureUrl = (String) payload.get("picture");
-// String locale = (String) payload.get("locale");
-// String familyName = (String) payload.get("family_name");
-// String givenName = (String) payload.get("given_name");
-
 	if(req.body.type == "teacher"){
 		let user = Teacher.findOne({username : req.body.username},(err, user)=>{
 			if(err){
@@ -246,14 +147,6 @@ app.post('/login',(req,res)=>{
 				errormsg = " *username not found";
 				res.render('login', {errormsg});
 			}else{
-
-				// if(user.password == hash(req.body.password+user.salt)){
-				// 	res.render('profile-teacher',{teacher: user});
-				// }
-				// else{
-				// 	errormsg = " *username and password does not match";
-				// 	res.render('login',{errormsg});
-				// }
 				bcrypt.compare(req.body.password, user.password, function(err,result){
 				if(err){
 					errormsg = " *system error";
@@ -263,13 +156,9 @@ app.post('/login',(req,res)=>{
 					errormsg = " *username and password does not match";
 					res.render('login',{errormsg});
 				}
-				else{	//TODO: potentially set expiration date for user login?
-					//res.append('Set-Cookie',`user=${result}`);	//if it does not accept object, make a session id in schema (or use google id)
+				else{
 					req.session.user = user;		//req.session.user stores current user information
-					//user passport req.user object
 					req.session.userType =  "teacher";
-					console.log("during login, user is :"+req.session.user);
-					console.log("user type: "+req.session.userType);
 					res.redirect('/browse');	//no need to pass in user here, but store user somewhere
 				}
 				});
@@ -283,22 +172,12 @@ app.post('/login',(req,res)=>{
 				errormsg = " *username not found";
 				res.render('login', {errormsg});
 			}else{
-				// if(user.password == hash(req.body.password+user.salt)){
-				// 	res.render('browse');
-				// }
-				// else{
-				// 	errormsg = " *username and password does not match";
-				// 	res.render('login',{errormsg});
-				// }
 				bcrypt.compare(req.body.password, user.password, function(err,result){
 					if(err){
 						errormsg = " *username and password does not match";
 					 	res.render('login',{errormsg});
 					}else{
 						req.session.user = user;		//req.session.user stores current user information
-						console.log("Login username: "+user.username);
-						console.log("Session username: "+req.session.user.username);
-						
 						req.session.userType = "student";
 						res.redirect('/browse');
 					}
@@ -327,24 +206,11 @@ app.post('/add-student',(req,res)=>{
 
 	//TODO: check if username already taken
 
-	// console.log("add student");
-	// console.log("existing students: ");
-	// Student.find((err, obj)=>{
-	// 	console.log(obj);
-	// });
-	 
-  //       //   name: USER_PROFILE.name.givenName,
-  //       //   profile: profile._json.picture 
-  //       // });
-  //       // u.save((err, user) => {
-  //       // 	req.session.user = u;
-  //       //   return done(err, user);
-  //       // });
 	bcrypt.hash(req.body.password, saltRounds, function(err,hash){
 		const student = new Student({	
 			username:req.body.username,
 			password: hash,	//note: if user registered with google, they would not need password but it would be the same as google id
-			headshot: req.body.headshot,	//TODO: make sure that this has to be from image/slug for each user
+			headshot: req.body.headshot,	//with public folder as directory, TODO: make sure that this has to be from image/slug for each user
 			styles: req.body.styles,	//here style is stored as strings because it is for reference purpose only
 			profile: req.body.profile
 		});
@@ -352,11 +218,6 @@ app.post('/add-student',(req,res)=>{
 
 		if(USER_PROFILE){
 			student.googleId= USER_PROFILE.id;
-			// student._id = mongoose.Types.ObjectId(parseInt(USER_PROFILE.id.toString(16)+"abcdeff",16));
-			// console.log(student._id);
-		}else{
-			student.headshot = "/image/"+student.slug+"/"+student.headshot;	//TODO: upload pictures to server, if it is not registered by google user, headshot must be placed in student's own slug folder inside image
-			//student._id = new mongoose.Types.ObjectId();
 		}
 		student.save((err, savedStudent)=>{
 			if(err){
@@ -364,7 +225,6 @@ app.post('/add-student',(req,res)=>{
 				console.log(err);
 				res.render('register-student',{errmsg:"error registering student",USER_PROFILE});
 			}else{
-				console.log("adding student success");
 				req.session.user = savedStudent;
 				req.session.userType = "student";
 				res.redirect('/browse');
@@ -390,12 +250,11 @@ app.post('/add-teacher',(req,res)=>{
 			
 			}
 
-			let profile_pic = fs.readFileSync(req.body.headshot);
-
+			
 			const teacher = new Teacher({
 				username:req.body.username,
-				headshot: profile_pic,		//TODO: want to store this as binary data
-				portfolio: req.body.portfolio,	//TODO: profile photo is supposed to be the first one in portfolio
+				headshot: req.body.headshot,		//TODO: want to store this as binary data
+				portfolio: req.body.portfolio,
 				password: hash,
 				styles: req.body.styles,	//an array of selections
 				locations: req.body.locations,
@@ -404,13 +263,9 @@ app.post('/add-teacher',(req,res)=>{
 				youtube_vids: vid_str	//get video ids separated by comma
 			});
 
-			if(USER_PROFILE){
-				teacher._id = mongoose.Types.ObjectId(parseInt(USER_PROFILE.id.toString(16)+"abcdeff",16));
-		
-			}
-			else{
-				teacher._id = new mongoose.Types.ObjectId();
-			}
+		if(USER_PROFILE){
+			teacher.googleId= USER_PROFILE.id;
+		}
 
 
 			teacher.save((err, savedTeacher)=>{
@@ -419,8 +274,6 @@ app.post('/add-teacher',(req,res)=>{
 				}else{
 					req.session.user = savedTeacher;
 					req.session.userType = "teacher";
-					console.log("Registered teacher: "+req.session.user.username);
-					console.log("Registered slug: "+req.session.user.slug);
 					res.redirect(`/profile-teacher/${req.session.user.slug}`);//send to teacher's own profile, TODO: pass in self object
 				}
 			});
@@ -433,7 +286,7 @@ app.get('/me',(req,res)=>{
 	//display private information: upcoming lessons and contacts
 	//contact object has name, slug, and amount of lessons
 	if(req.session.userType == "teacher"){
-		res.render('me',{user:req.session.user,teacher:true});	//TODO: use req.user for passport instead
+		res.render('me',{user:req.session.user,teacher:true});
 	}
 	else{	//student page
 		res.render('me',{user:req.session.user, teacher:false});
@@ -445,8 +298,6 @@ app.get('/about', (req,res)=>{
 	res.render('about',{user: req.session.user});
 });
 app.get('/profile-teacher/:teacher', (req,res)=>{
-	//TODO: how to pass teacher to here when redirect
-	//res.send(req.params.teacher);
 
 	Teacher.findOne({slug: req.params.teacher},(err, teacherObj)=>{
 		if(err){
@@ -459,8 +310,6 @@ app.get('/profile-teacher/:teacher', (req,res)=>{
 });
 
 app.get('/profile-student/:student', (req,res)=>{
-	console.log("root directory: ");
-	console.log(process.cwd());
 	Student.findOne({slug: req.params.student},(err, studentObj)=>{
 		if(err){
 			let errstr = "student not found";
@@ -472,11 +321,10 @@ app.get('/profile-student/:student', (req,res)=>{
 	});
 });
 app.get('/browse', (req,res)=>{
-	//console.log("google user",req.user);
 	if(!req.session.user){	//logged in with google and therefore was not able to access req.session
 		req.session.user = USER_ENTRY;
+		req.session.userType = USER_TYPE;
 	}
-	//console.log("Username: "+req.user.name);
 	let isStudent = false;
 	if(req.session.userType == "student"){
 		isStudent = true;

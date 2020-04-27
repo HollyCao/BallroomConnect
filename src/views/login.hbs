@@ -3,6 +3,9 @@
 </div>
 
 <div id = "signin">
+	<a href="/auth/google"><b>Sign in with google</b></a></br></br>
+	<alert>Log in without google account or appointment service 👇</alert></br></br>
+
 	<form method = "POST" action = "/login">
 		Username: <input type = "text" name="username" value = ""></br></br>
 		Password: <input type = "password" name="password" value = ""></br></br>
@@ -15,21 +18,22 @@
 		<input type = "submit" value = "Login" style = "font-size: 20px">
 		</br></br>
 	</form>
+	<a href = "mailto:sc6220@nyu.edu" style="display: inline-block; left: 50%">account issues?</a></br>
+
+	
+	
 </div>
 
-account issues? <a href = "mailto:sc6220@nyu.edu" style="display: inline-block; left: 50%">Troubleshoot us</a></br>
-
-<a href="/auth/google">Sign in with google</a></br>
-
-<alert>**Note: log in to your google account before signup to receive scheduling services. </alert>
 
 <div id = "signup">
 
 	<p style = "color:red">{{errormsg}}</p>
 
-	don't have an account?</br>
+	<b>don't have an account?</b></br>
     <div style = "display:inline-block">
     	<a href="/auth/google">First, log in with google, then:</a></br>
+    	<alert>^optional, receive fast-track registration and appointment services</alert></br></br>
+		</br>
         <a href="/register-teacher">register as teacher</a></br>
         <a href="/register-student">register as student</a></br>
     </div>
