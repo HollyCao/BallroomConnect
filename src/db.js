@@ -12,7 +12,8 @@ mongoose.model('User', User);
 
 
 const Student = new mongoose.Schema({
-	_id: { type: mongoose.ObjectId, auto: true },
+	//_id: { type: mongoose.ObjectId, auto: true },
+	googleId: String,
 	username:{type:String, required:[true,'{PATH} is required!']},
 	password:{type:String, required: [true,'{PATH} is required!']},
 	profile:{type:String, required:[true,'{PATH} is required!']},

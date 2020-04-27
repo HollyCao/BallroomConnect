@@ -85,13 +85,17 @@ passport.use(new GoogleStrategy(options,
   function(accessToken, refreshToken, profile, done) {
   		console.log("Google login info: ");
   		console.log({accessToken, refreshToken, profile});
-  	User.findOne({_id: profile.id }, function (err, user) {
+  	//User.findOne({_id: mongoose.Types.ObjectId(parseInt(profile.id.toString(16)+"abcdeff",16)) }, function (err, user) {
+    Student.findOne({googleId: profile.id }, function (err, user) {
+     	console.log("google id: "+profile.id);
       if(!user) {
-      	console.log("user not found.")
+      	console.log("student user not found.")
       	let errormsg = " *your google account has not been registered. ";
        	USER_PROFILE = profile;		//although not registered, the button does allow the user to log in to google account and now they can assign it into user entry
 		// ACCESS_TOKEN  = accessToken;
 		// REFRESH_TOKEN = refreshToken;
+
+		
 		return done(err, user);
 		// res.render('login',{errormsg});
   //       // const u = new User({
@@ -314,12 +318,13 @@ app.post('/login',(req,res)=>{
 
 
 app.get('/register-teacher', (req,res)=>{
-	res.render('register-teacher');
+	res.render('register-teacher',{USER_PROFILE});
 });
 app.get('/register-student', (req,res)=>{
-	res.render('register-student');
+	res.render('register-student',{USER_PROFILE});
 });
 app.post('/add-student',(req,res)=>{
+
 	//TODO: check if username already taken
 
 	// console.log("add student");
@@ -336,39 +341,28 @@ app.post('/add-student',(req,res)=>{
   //       //   return done(err, user);
   //       // });
 	bcrypt.hash(req.body.password, saltRounds, function(err,hash){
-		// const student = new Student({	
-		// 	username:req.body.username,
-		// 	password: hash,
-		// 	headshot: req.body.headshot,	//TODO: make sure that this has to be from image/slug for each user
-		// 	styles: req.body.styles,	//here style is stored as strings because it is for reference purpose only
-		// 	profile: req.body.profile
-		// });
+		const student = new Student({	
+			username:req.body.username,
+			password: hash,	//note: if user registered with google, they would not need password but it would be the same as google id
+			headshot: req.body.headshot,	//TODO: make sure that this has to be from image/slug for each user
+			styles: req.body.styles,	//here style is stored as strings because it is for reference purpose only
+			profile: req.body.profile
+		});
 
 
 		if(USER_PROFILE){
-			const student = new User({	
-				username:req.body.username,
-				password: hash,
-				headshot: req.body.headshot,	//TODO: make sure that this has to be from image/slug for each user
-				styles: req.body.styles,	//here style is stored as strings because it is for reference purpose only
-				profile: req.body.profile
-			})
-			student._id = USER_PROFILE.id;
+			student.googleId= USER_PROFILE.id;
+			// student._id = mongoose.Types.ObjectId(parseInt(USER_PROFILE.id.toString(16)+"abcdeff",16));
+			// console.log(student._id);
 		}else{
-			const student = new User({	
-				username:req.body.username,
-				password: hash,
-				headshot: req.body.headshot,	//TODO: make sure that this has to be from image/slug for each user
-				styles: req.body.styles,	//here style is stored as strings because it is for reference purpose only
-				profile: req.body.profile
-			})
-			student._id = new mongoose.Types.ObjectId();
+			student.headshot = "/image/"+student.slug+"/"+student.headshot;	//TODO: upload pictures to server, if it is not registered by google user, headshot must be placed in student's own slug folder inside image
+			//student._id = new mongoose.Types.ObjectId();
 		}
 		student.save((err, savedStudent)=>{
 			if(err){
 				console.log("error adding student");
 				console.log(err);
-				res.render('register-student',{errmsg:"error registering student"});
+				res.render('register-student',{errmsg:"error registering student",USER_PROFILE});
 			}else{
 				console.log("adding student success");
 				req.session.user = savedStudent;
@@ -411,7 +405,8 @@ app.post('/add-teacher',(req,res)=>{
 			});
 
 			if(USER_PROFILE){
-				teacher._id = USER_PROFILE.id;
+				teacher._id = mongoose.Types.ObjectId(parseInt(USER_PROFILE.id.toString(16)+"abcdeff",16));
+		
 			}
 			else{
 				teacher._id = new mongoose.Types.ObjectId();
@@ -420,7 +415,7 @@ app.post('/add-teacher',(req,res)=>{
 
 			teacher.save((err, savedTeacher)=>{
 				if(err){
-					res.redirect('/register-teacher',{errmsg: err});
+					res.redirect('/register-teacher',{errmsg: "error registering teacher", USER_PROFILE});
 				}else{
 					req.session.user = savedTeacher;
 					req.session.userType = "teacher";

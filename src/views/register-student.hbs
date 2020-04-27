@@ -8,15 +8,27 @@
 		<alert>{{message}}</alert>
 	{{/if}}
 
+
 	<form method = "POST" action = "/add-student">
-		Username:<input type = "text" name = "username" value = "{{err.errors.username.value}}"><alert>*required</alert></br></br>
+		{{#if USER_PROFILE}}
+			Username:<input type = "text" name = "username" value = "{{USER_PROFILE.displayName}}"><alert>*required</alert></br></br>
 
-		Password:<input type = "password" name = "password" value = "{{err.errors.password.value}}"><alert>*required</alert></br></br>
+			<input type = "password" name = "password" style = "display: none" value = {{USER_PROFILE.id}}>
 
-		A picture of you:<input type = "file" name = "headshot" value = "{{err.errors.headshot.value}}"accept="image/*"><alert>*required</alert></br></br>
+			<input type = "text" name = "headshot" style = "display: none" value = {{USER_PROFILE._json.picture}} accept="image/*">
+		{{else}}
+			Username:<input type = "text" name = "username" value = "{{err.errors.username.value}}"><alert>*required</alert></br></br>
 
+			Password:<input type = "password" name = "password" value = "{{err.errors.password.value}}"><alert>*required</alert></br></br>
+
+			A picture of you:<input type = "file" name = "headshot" value = "{{err.errors.headshot.value}}"accept="image/*"><alert>*required</alert></br></br>
+
+		{{/if}}
+
+		
 		Styles and interests:</br><textarea style = "width: 600px;height: 200px" name = "styles" value = "{{err.errors.styles.value}}"></textarea></br></br>
 
-		About You:</br><textarea style = "width: 600px;height: 200px" name = "profile" value = "{{err.errors.profile.value}}"></textarea></br></br>
+		About You:<alert>*required</alert></br><textarea style = "width: 600px;height: 200px" name = "profile" value = "{{err.errors.profile.value}}"></textarea></br></br>
 
 		<input style = "width: 200px; height: 200px"type = "submit" value = "get started as student!">
+	</form>
