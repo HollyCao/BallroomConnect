@@ -254,7 +254,7 @@ app.post('/add-teacher',(req,res)=>{
 			const teacher = new Teacher({
 				username:req.body.username,
 				headshot: req.body.headshot,		//TODO: want to store this as binary data
-				portfolio: req.body.portfolio,
+				//portfolio: req.body.portfolio,
 				password: hash,
 				styles: req.body.styles,	//an array of selections
 				locations: req.body.locations,

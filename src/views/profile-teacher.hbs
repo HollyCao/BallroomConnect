@@ -38,6 +38,7 @@
 
 
 
+<!--
 {{#if teacher.portfolio}}
 <h3>Photo Gallery</h3>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -48,10 +49,10 @@
 		{{#each teacher.portfolio as |image|}}
 			<div class="mySlides fade">
 				<div class="numbertext">{{@index}} / {{teacher.portfolio.length}}</div>
-		
-					<img src="/image/{{image}}" style="width:50%; position:relative">
+					{{@index}}: {{image}}
+					<img src="/public/image/{{image}}" style="width:50%; position:relative">
 
-				 	<div class="text">{{teacher.username}}</div>	<!--TODO: optionally add caption text for each picture in portfolio-->
+				 	<div class="text">{{teacher.username}}</div>
 				
 			</div>
 		{{/each}}
@@ -65,10 +66,11 @@
 
 	<div style = "text-align: center">
 		{{#each teacher.portfolio}}
-			  <span class="dot" onclick="currentSlide{{@index}}"></span>	<!--TODO: deal with dots not fitting page -->
+			  <span class="dot" onclick="currentSlide{{@index}}"></span>
 		{{/each}}
 	</div>
 
 </div>
 {{/if}}
 
+-->

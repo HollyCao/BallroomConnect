@@ -59,8 +59,9 @@ field{
 }
 
 .profile-pic{
-	text-align:center;
 	display:inline-block;
+  width: 20%;
+  left: 10%;
 	border-style:double;
 	border-color:gold;
 }

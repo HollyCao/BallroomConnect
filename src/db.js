@@ -30,7 +30,7 @@ const Teacher = new mongoose.Schema({
 	price: {type:String, required: [true,'{PATH} is required!']},
 	height: {type: String, default: ""},
 	headshot: {type: String, default: "/image/logo.jpeg"},
-	portfolio:{type:Array, default:[]},		//these are only photos
+	//portfolio:{type:Array, default:[]},		//these are only photos
 	youtube_vids:{type:String},	//array of youtube links
 	locations: {type: Array, default:[]},
 	availiability:{type:Array, required:[true,'{PATH} is required!']},
