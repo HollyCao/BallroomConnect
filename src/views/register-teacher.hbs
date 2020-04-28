@@ -13,7 +13,6 @@
 
 <form method = "POST" action = "/add-teacher">
 
-
 	{{#if USER_PROFILE}}
 		Username:<input type = "text" name = "username" value = "{{USER_PROFILE.displayName}}"><alert>*required</alert></br></br>
 
@@ -30,6 +29,8 @@
 
 	<!--
 	Portfolio:<input type = "file" name = "portfolio" accept="image/*, video/*" multiple>(hold control or shift to select multiple)</br></br>-->
+
+	Teaching google calendar ID :<a href = "https://docs.simplecalendar.io/find-google-calendar-id/" target="_blank">❓</a><input type = "text" name = "calendar" value = ""></br>
 
 	Height:<input type = "text" name = "height" value = ""></br></br>
 

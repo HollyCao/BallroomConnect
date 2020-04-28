@@ -2,6 +2,7 @@
 	<a href = "/browse">browse</a></br>
 	<a href = "/me">my portal</a></br>
 	<a href = "/about">about us</a>
+	<a href = "/logout">Log out</a>
 </div>
 <h3>Teacher Profile:{{teacher.username}}</h3>
 	<div style = "margin-left: 60px; padding: 30px; background-color: lightyellow;" >
@@ -34,12 +35,27 @@
 
 	</div>
 
+{{#if teacher.calendarId}}
+
+<h3>Availiability</h3>
+
+
+
+<iframe src="https://calendar.google.com/calendar/embed?height=600&amp;
+wkst=1&amp;bgcolor=%23F6BF26&amp;ctz=America%2FNew_York&amp;
+src={{teacher.calendarId}}&amp;
+color=%23F09300&amp;showTitle=0&amp;showPrint=0&amp;
+showCalendars=0; mode=WEEK" style="border:solid 1px #777; position: absolute; left: 30%" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+
+
+{{/if}}
 <!--slideshow from tutorial https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_slideshow -->
 
 
 
-<!--
+
 {{#if teacher.portfolio}}
+
 <h3>Photo Gallery</h3>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -49,28 +65,30 @@
 		{{#each teacher.portfolio as |image|}}
 			<div class="mySlides fade">
 				<div class="numbertext">{{@index}} / {{teacher.portfolio.length}}</div>
-					{{@index}}: {{image}}
-					<img src="/public/image/{{image}}" style="width:50%; position:relative">
+					<img src="/image/{{image}}" style="width:50%; position:relative">
 
 				 	<div class="text">{{teacher.username}}</div>
 				
+				
 			</div>
 		{{/each}}
-
+<!--
 		<a class="prev" style = "left:25%" onclick="plusSlides(-1)">&#10094;</a>
 		<a class="next" style = "right:25%" onclick="plusSlides(1)">&#10095;</a>
+-->
 
 	</div>
 	<br>
 
-
+<!--
 	<div style = "text-align: center">
 		{{#each teacher.portfolio}}
 			  <span class="dot" onclick="currentSlide{{@index}}"></span>
 		{{/each}}
 	</div>
+-->
 
 </div>
 {{/if}}
 
--->
+
