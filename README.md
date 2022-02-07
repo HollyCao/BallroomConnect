@@ -1,10 +1,10 @@
-# Ballroom Tinder 
+# Ballroom Partner Search Application proposal
 
 ## Overview
 
 Ballroom dancing is a difficult sport to start off because it's hard to schedule lessons with teachers and it is hard to know which teachers is good for you. There is no other way to schedule lessons besides hearing about teachers by word of mouth, getting their numbers and texting them. Even for people who have been doing ballroom for many years, scheduling still takes up a lot of their time because texting requires going back and forth between you, your teacher and your dance partner. Unless...
 
-Ballroom Tinder is a web app that allows teachers and students to get to know each other and make plans together. When users register to the app, they have a choice to register as a teacher or a student. Both teachers and students get to build their portfolio indicating their background, their level of experience, their preferences, and the style that they want to teach/learn, which can be filtered. Additionally, teachers get to mark out days and hours in the week when they are availiable for lessons. (if they are already booked or have other commitments for certain days, that part of their availiability would be marked off) Students get to book teachers on their calendars for the teachers to confirm. The website will remember which teachers and students that the users have had lessons with before, so they can schedule again easily and perhaps schedule standing lessons at the same time each week. If time allows, there will also be a chat box so that teachers and students can communicate about lesson scheduling.
+Ballroom Connect is a web app that allows teachers and students to get to know each other and make plans together. When users register to the app, they have a choice to register as a teacher or a student. Both teachers and students get to build their portfolio indicating their background, their level of experience, their preferences, and the style that they want to teach/learn, which can be filtered. Additionally, teachers get to mark out days and hours in the week when they are availiable for lessons. (if they are already booked or have other commitments for certain days, that part of their availiability would be marked off) Students get to book teachers on their calendars for the teachers to confirm. The website will remember which teachers and students that the users have had lessons with before, so they can schedule again easily and perhaps schedule standing lessons at the same time each week. If time allows, there will also be a chat box so that teachers and students can communicate about lesson scheduling.
 
 
 
@@ -138,7 +138,7 @@ link: profile-teacher, profile-student
 link: profile-teacher, profile-student
 ![upcoming-lessons](documentation/upcoming-lessons.jpeg)
 
-/about - page for showing about and disclaimers regarding Ballroom Tinder
+/about - page for showing about and disclaimers regarding Ballroom Connect
 
 link: browse, login, profile-teacher, profile-student
 ![upcoming-lessons](documentation/about.jpeg)
